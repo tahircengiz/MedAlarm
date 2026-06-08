@@ -161,6 +161,22 @@
     <string name="settings_about_version">Sürüm</string>
     <string name="settings_about_source">GitHub kaynak kodu</string>
 
+    <!-- Medication list/detail -->
+    <string name="med_list_title">İlaçlar</string>
+    <string name="med_list_empty">Henüz ilaç yok.</string>
+    <string name="med_list_inactive_section">Pasif</string>
+    <string name="med_detail_title">İlaç</string>
+    <string name="med_edit_title">İlacı düzenle</string>
+    <string name="med_delete_confirm_title">İlaç silinsin mi?</string>
+    <string name="med_delete_confirm_body">%1$s kaldırılacak ve sonraki hatırlatmaları iptal edilecek. Geçmiş doz kayıtları korunur.</string>
+    <string name="med_pause">Hatırlatmaları durdur</string>
+    <string name="med_resume">Hatırlatmaları sürdür</string>
+    <string name="med_detail_schedule">Program</string>
+    <string name="med_detail_treatment">Tedavi süresi</string>
+    <string name="med_detail_stock">Stok</string>
+    <string name="med_detail_notes">Notlar</string>
+    <string name="med_detail_open_ended">Süresiz</string>
+
     <!-- Backup -->
     <string name="backup_title">Yedekleme ve Dışa Aktar</string>
     <string name="backup_section_json">Veri yedeği (JSON)</string>

@@ -45,6 +45,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onOpenSystemStatus: () -> Unit,
     onOpenBackup: () -> Unit,
+    onOpenMedications: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val settings by viewModel.settings.collectAsState()
@@ -76,7 +77,8 @@ fun SettingsScreen(
             item {
                 SystemSection(
                     onOpenSystemStatus = onOpenSystemStatus,
-                    onOpenBackup = onOpenBackup
+                    onOpenBackup = onOpenBackup,
+                    onOpenMedications = onOpenMedications
                 )
             }
             item { HorizontalDivider() }
@@ -197,9 +199,17 @@ private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {
 }
 
 @Composable
-private fun SystemSection(onOpenSystemStatus: () -> Unit, onOpenBackup: () -> Unit) {
+private fun SystemSection(
+    onOpenSystemStatus: () -> Unit,
+    onOpenBackup: () -> Unit,
+    onOpenMedications: () -> Unit
+) {
     Column {
         SectionHeader(stringResource(R.string.settings_section_system))
+        NavigationRow(
+            label = stringResource(R.string.med_list_title),
+            onClick = onOpenMedications
+        )
         NavigationRow(
             label = stringResource(R.string.settings_open_system_status),
             onClick = onOpenSystemStatus

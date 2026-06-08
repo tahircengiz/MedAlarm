@@ -171,6 +171,22 @@
     <string name="settings_about_version">Version</string>
     <string name="settings_about_source">Source code on GitHub</string>
 
+    <!-- Medication list/detail -->
+    <string name="med_list_title">Medications</string>
+    <string name="med_list_empty">No medications yet.</string>
+    <string name="med_list_inactive_section">Inactive</string>
+    <string name="med_detail_title">Medication</string>
+    <string name="med_edit_title">Edit medication</string>
+    <string name="med_delete_confirm_title">Delete medication?</string>
+    <string name="med_delete_confirm_body">This will remove %1$s and cancel its future reminders. Past dose history is kept.</string>
+    <string name="med_pause">Pause reminders</string>
+    <string name="med_resume">Resume reminders</string>
+    <string name="med_detail_schedule">Schedule</string>
+    <string name="med_detail_treatment">Treatment window</string>
+    <string name="med_detail_stock">Stock</string>
+    <string name="med_detail_notes">Notes</string>
+    <string name="med_detail_open_ended">Open-ended</string>
+
     <!-- Backup -->
     <string name="backup_title">Backup &amp; Export</string>
     <string name="backup_section_json">Data backup (JSON)</string>

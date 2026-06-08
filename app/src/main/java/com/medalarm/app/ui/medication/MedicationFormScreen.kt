@@ -64,17 +64,18 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AddMedicationScreen(
+fun MedicationFormScreen(
     onClose: () -> Unit,
     onSaved: () -> Unit,
-    viewModel: AddMedicationViewModel = hiltViewModel()
+    viewModel: MedicationFormViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val titleRes = if (viewModel.isEditing) R.string.med_edit_title else R.string.add_med_title
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.add_med_title)) },
+                title = { Text(stringResource(titleRes)) },
                 navigationIcon = {
                     IconButton(onClick = onClose) {
                         Icon(Icons.Outlined.ArrowBack, contentDescription = stringResource(R.string.cancel))
@@ -125,7 +126,7 @@ private fun SectionLabel(title: String) {
 }
 
 @Composable
-private fun BasicsSection(state: AddMedicationFormState, vm: AddMedicationViewModel) {
+private fun BasicsSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
         SectionLabel(stringResource(R.string.add_med_section_basics))
         Spacer(Modifier.height(8.dp))
@@ -204,7 +205,7 @@ private fun MealRelation.localizedLabel(): String = when (this) {
 }
 
 @Composable
-private fun ScheduleSection(state: AddMedicationFormState, vm: AddMedicationViewModel) {
+private fun ScheduleSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
         SectionLabel(stringResource(R.string.add_med_section_schedule))
         Spacer(Modifier.height(8.dp))
@@ -306,7 +307,7 @@ private fun TimePickerDialog(onDismiss: () -> Unit, onTimeSelected: (LocalTime) 
 }
 
 @Composable
-private fun TreatmentWindowSection(state: AddMedicationFormState, vm: AddMedicationViewModel) {
+private fun TreatmentWindowSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
         SectionLabel(stringResource(R.string.add_med_section_treatment))
         Spacer(Modifier.height(8.dp))
@@ -391,7 +392,7 @@ private fun DatePickerSimple(initial: LocalDate, onDismiss: () -> Unit, onPick: 
 }
 
 @Composable
-private fun StockSection(state: AddMedicationFormState, vm: AddMedicationViewModel) {
+private fun StockSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
         SectionLabel(stringResource(R.string.add_med_section_stock))
         Spacer(Modifier.height(8.dp))
@@ -438,7 +439,7 @@ private fun StockSection(state: AddMedicationFormState, vm: AddMedicationViewMod
 }
 
 @Composable
-private fun NotesSection(state: AddMedicationFormState, vm: AddMedicationViewModel) {
+private fun NotesSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
         SectionLabel(stringResource(R.string.add_med_section_notes))
         Spacer(Modifier.height(8.dp))

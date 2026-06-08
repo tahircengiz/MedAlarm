@@ -102,6 +102,7 @@ class JsonBackupRepository @Inject constructor(
                 file.medications.forEach { medicationDao.insert(it.toEntity()) }
                 file.schedules.forEach { scheduleDao.insert(it.toEntity()) }
                 doseLogDao.insertAll(file.doseLogs.map { it.toEntity() })
+                Unit
             }
         }
     }.onFailure { Timber.e(it, "Backup import failed") }

@@ -2,13 +2,17 @@ package com.medalarm.app.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.medalarm.app.ui.backup.BackupScreen
 import com.medalarm.app.ui.history.HistoryScreen
 import com.medalarm.app.ui.home.HomeScreen
-import com.medalarm.app.ui.medication.AddMedicationScreen
+import com.medalarm.app.ui.medication.MedicationDetailScreen
+import com.medalarm.app.ui.medication.MedicationFormScreen
+import com.medalarm.app.ui.medication.MedicationListScreen
 import com.medalarm.app.ui.onboarding.OnboardingScreen
 import com.medalarm.app.ui.settings.SettingsScreen
 import com.medalarm.app.ui.settings.SystemStatusScreen
@@ -42,10 +46,44 @@ fun MedAlarmNavHost(
             )
         }
 
+        composable(Routes.MEDICATIONS) {
+            MedicationListScreen(
+                onBack = { navController.popBackStack() },
+                onOpenMedication = { id -> navController.navigate(Routes.medicationDetail(id)) },
+                onAddMedication = { navController.navigate(Routes.ADD_MEDICATION) }
+            )
+        }
+
         composable(Routes.ADD_MEDICATION) {
-            AddMedicationScreen(
+            MedicationFormScreen(
                 onClose = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            Routes.EDIT_MEDICATION,
+            arguments = listOf(navArgument(Routes.MEDICATION_ID_KEY) { type = NavType.StringType })
+        ) {
+            MedicationFormScreen(
+                onClose = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            Routes.MEDICATION_DETAIL,
+            arguments = listOf(navArgument(Routes.MEDICATION_ID_KEY) { type = NavType.StringType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getString(Routes.MEDICATION_ID_KEY)?.toLongOrNull()
+            MedicationDetailScreen(
+                onBack = { navController.popBackStack() },
+                onEdit = {
+                    if (id != null) navController.navigate(Routes.editMedication(id))
+                },
+                onDeleted = {
+                    navController.popBackStack(Routes.HOME, inclusive = false)
+                }
             )
         }
 
@@ -53,7 +91,8 @@ fun MedAlarmNavHost(
             SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onOpenSystemStatus = { navController.navigate(Routes.SETTINGS_SYSTEM_STATUS) },
-                onOpenBackup = { navController.navigate(Routes.SETTINGS_BACKUP) }
+                onOpenBackup = { navController.navigate(Routes.SETTINGS_BACKUP) },
+                onOpenMedications = { navController.navigate(Routes.MEDICATIONS) }
             )
         }
 
@@ -70,4 +109,3 @@ fun MedAlarmNavHost(
         }
     }
 }
-
