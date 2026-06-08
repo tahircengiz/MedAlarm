@@ -4,6 +4,7 @@ import android.app.Application
 import android.os.StrictMode
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.medalarm.app.notification.NotificationChannels
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,6 +22,9 @@ class MedAlarmApplication : Application(), Configuration.Provider {
             Timber.plant(Timber.DebugTree())
             enableStrictMode()
         }
+
+        // Channels are safe to (re)create at every boot — Android merges by ID.
+        NotificationChannels.createAll(this)
     }
 
     /**
