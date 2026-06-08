@@ -10,8 +10,7 @@ import com.medalarm.app.domain.model.Schedule
 import com.medalarm.app.domain.model.ScheduleType
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
-import com.medalarm.app.domain.usecase.AlarmRegistrar
-import com.medalarm.app.domain.usecase.ScheduleNextDoseUseCase
+import com.medalarm.app.domain.usecase.GenerateUpcomingDosesUseCase
 import com.medalarm.app.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,8 +58,7 @@ class MedicationFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val medicationRepository: MedicationRepository,
     private val settingsRepository: SettingsRepository,
-    private val scheduleNextDoseUseCase: ScheduleNextDoseUseCase,
-    private val alarmRegistrar: AlarmRegistrar
+    private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MedicationFormState(isLoading = true))
@@ -136,10 +134,7 @@ class MedicationFormViewModel @Inject constructor(
                     val medication = current.toNewMedication(now)
                     val schedule = current.toSchedule(medicationId = 0)
                     val medId = medicationRepository.add(medication, listOf(schedule))
-                    val saved = medicationRepository.getSchedules(medId).firstOrNull()
-                    if (saved != null) {
-                        scheduleNextDoseUseCase(medId, saved.id)
-                    }
+                    generateUpcomingDosesUseCase(medId)
                 } else {
                     val existing = medicationRepository.get(editingId) ?: error("Medication missing")
                     val updated = existing.copy(
@@ -164,12 +159,11 @@ class MedicationFormViewModel @Inject constructor(
                         medicationRepository.updateSchedule(rewritten)
                     }
 
-                    // Reschedule: cancel any future PENDING for this med then
-                    // ask the use case to compute the next one from the new rule set.
-                    val newSchedule = medicationRepository.getSchedules(editingId).firstOrNull()
-                    if (newSchedule != null) {
-                        scheduleNextDoseUseCase(editingId, newSchedule.id)
-                    }
+                    // Regenerate the 14-day window with the updated schedule rules.
+                    // Existing PENDING rows at the same scheduledAt are kept (dedup),
+                    // so the user's interaction history isn't lost — only newly-shifted
+                    // times produce new rows.
+                    generateUpcomingDosesUseCase(editingId)
                 }
                 onSaved()
             } catch (t: Throwable) {

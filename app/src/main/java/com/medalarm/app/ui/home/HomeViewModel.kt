@@ -11,48 +11,70 @@ import com.medalarm.app.permission.OemAutostartHelper
 import com.medalarm.app.permission.SystemHealthChecker
 import com.medalarm.app.permission.SystemHealthReport
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
 
 data class HomeUiState(
+    val selectedDate: LocalDate = LocalDate.now(),
     val medications: List<Medication> = emptyList(),
-    val todaysDoses: List<DoseLog> = emptyList(),
+    val doses: List<DoseLog> = emptyList(),
     val healthReport: SystemHealthReport? = null
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     medicationRepository: MedicationRepository,
-    doseLogRepository: DoseLogRepository,
+    private val doseLogRepository: DoseLogRepository,
     private val settingsRepository: SettingsRepository,
     private val systemHealthChecker: SystemHealthChecker,
     private val oemAutostartHelper: OemAutostartHelper
 ) : ViewModel() {
 
     private val _healthReport = MutableStateFlow<SystemHealthReport?>(null)
-    val healthReport: StateFlow<SystemHealthReport?> = _healthReport.asStateFlow()
-
-    private val todayRange: Pair<Instant, Instant> = computeTodayRange()
+    private val _selectedDate = MutableStateFlow(LocalDate.now())
 
     val uiState: StateFlow<HomeUiState> = combine(
         medicationRepository.observeActive(),
-        // For MVP this window is captured at VM init; the cross-midnight refresh
-        // will be handled by re-collecting on resume in a later commit.
-        doseLogRepository.observeRange(todayRange.first, todayRange.second),
-        healthReport
-    ) { meds, doses, health ->
-        HomeUiState(medications = meds, todaysDoses = doses, healthReport = health)
+        _selectedDate.flatMapLatest { date ->
+            val zone = ZoneId.systemDefault()
+            val start = date.atStartOfDay(zone).toInstant()
+            val end = date.plusDays(1).atStartOfDay(zone).toInstant()
+            doseLogRepository.observeRange(start, end)
+        },
+        _selectedDate,
+        _healthReport
+    ) { meds, doses, date, health ->
+        HomeUiState(
+            selectedDate = date,
+            medications = meds,
+            doses = doses.sortedBy { it.scheduledAt },
+            healthReport = health
+        )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
+
+    fun selectDate(date: LocalDate) {
+        _selectedDate.value = date
+    }
+
+    fun jumpToToday() {
+        _selectedDate.value = LocalDate.now()
+    }
+
+    fun shiftDay(delta: Int) {
+        _selectedDate.update { it.plusDays(delta.toLong()) }
+    }
 
     fun refreshHealth() {
         viewModelScope.launch {
@@ -63,13 +85,5 @@ class HomeViewModel @Inject constructor(
             )
             _healthReport.update { report }
         }
-    }
-
-    private fun computeTodayRange(): Pair<Instant, Instant> {
-        val zone = ZoneId.systemDefault()
-        val today = LocalDate.now(zone)
-        val start = today.atStartOfDay(zone).toInstant()
-        val end = today.plusDays(1).atStartOfDay(zone).toInstant()
-        return start to end
     }
 }

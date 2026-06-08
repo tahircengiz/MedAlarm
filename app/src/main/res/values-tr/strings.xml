@@ -99,6 +99,13 @@
     <string name="home_action_settings">Ayarlar</string>
     <string name="home_critical_banner">MedAlarm şu an hatırlatma gönderemiyor — düzeltmek için dokun.</string>
     <string name="home_no_doses_today">Bugün için planlanmış doz yok.</string>
+    <string name="home_no_doses_day">Bu gün için planlanmış doz yok.</string>
+    <string name="home_today">Bugün</string>
+    <string name="home_tomorrow">Yarın</string>
+    <string name="home_yesterday">Dün</string>
+    <string name="home_prev_day">Önceki gün</string>
+    <string name="home_next_day">Sonraki gün</string>
+    <string name="home_jump_today">Bugün</string>
 
     <!-- Common -->
     <string name="cancel">İptal</string>

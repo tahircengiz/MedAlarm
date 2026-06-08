@@ -6,7 +6,7 @@ import android.content.Intent
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
-import com.medalarm.app.domain.usecase.ScheduleNextDoseUseCase
+import com.medalarm.app.domain.usecase.GenerateUpcomingDosesUseCase
 import com.medalarm.app.notification.NotificationHelper
 import com.medalarm.app.tts.TtsHelper
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +30,7 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
     @Inject lateinit var medicationRepository: MedicationRepository
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var notificationHelper: NotificationHelper
-    @Inject lateinit var scheduleNextDoseUseCase: ScheduleNextDoseUseCase
+    @Inject lateinit var generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase
     @Inject lateinit var ttsHelper: TtsHelper
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -57,13 +57,9 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
                     snoozeButtonEnabled = snoozeEnabled
                 )
 
-                // Schedule the NEXT dose for this medication/schedule. We do this
-                // immediately rather than waiting for the user's action, so the
-                // chain survives even if they swipe the notification away.
-                scheduleNextDoseUseCase(
-                    medicationId = log.medicationId,
-                    scheduleId = log.scheduleId
-                )
+                // Top up the 14-day PENDING window — also registers the alarm for
+                // the soonest remaining PENDING in any schedule of this medication.
+                generateUpcomingDosesUseCase(medicationId = log.medicationId)
 
                 // Speak the medication name if the user has TTS enabled. Errors
                 // here are swallowed by TtsHelper — they should never block the

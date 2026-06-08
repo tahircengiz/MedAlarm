@@ -8,21 +8,22 @@ import javax.inject.Inject
  * For each schedule belonging to an active medication, schedules the next dose.
  * Called by BootCompletedReceiver, TimeChangedReceiver, and the periodic health worker.
  *
- * Idempotent: [ScheduleNextDoseUseCase] dedups by reusing existing future PENDING
- * rows, and AlarmManager replaces previous PendingIntents with the same request code.
+ * Idempotent: [GenerateUpcomingDosesUseCase] dedups by skipping existing PENDING
+ * rows at the same scheduledAt, and AlarmManager replaces previous PendingIntents
+ * with the same request code.
  */
 class RescheduleAllActiveUseCase @Inject constructor(
     private val medicationRepository: MedicationRepository,
-    private val scheduleNextDoseUseCase: ScheduleNextDoseUseCase
+    private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase
 ) {
     suspend operator fun invoke(now: Instant = Instant.now()) {
-        val schedules = medicationRepository.getAllSchedulesForActiveMedications()
-        schedules.forEach { schedule ->
-            scheduleNextDoseUseCase(
-                medicationId = schedule.medicationId,
-                scheduleId = schedule.id,
-                after = now
-            )
+        // Repopulate the 14-day PENDING window for every active medication.
+        // Idempotent — existing PENDING rows at unchanged times are preserved.
+        val active = medicationRepository.getAllSchedulesForActiveMedications()
+            .map { it.medicationId }
+            .distinct()
+        active.forEach { medicationId ->
+            generateUpcomingDosesUseCase(medicationId, now = now)
         }
     }
 }

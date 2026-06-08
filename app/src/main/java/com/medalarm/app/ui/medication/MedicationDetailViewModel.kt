@@ -8,7 +8,7 @@ import com.medalarm.app.domain.model.Schedule
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.usecase.AlarmRegistrar
-import com.medalarm.app.domain.usecase.ScheduleNextDoseUseCase
+import com.medalarm.app.domain.usecase.GenerateUpcomingDosesUseCase
 import com.medalarm.app.ui.navigation.Routes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -30,7 +30,7 @@ class MedicationDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val medicationRepository: MedicationRepository,
     private val doseLogRepository: DoseLogRepository,
-    private val scheduleNextDoseUseCase: ScheduleNextDoseUseCase,
+    private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase,
     private val alarmRegistrar: AlarmRegistrar
 ) : ViewModel() {
 
@@ -59,9 +59,7 @@ class MedicationDetailViewModel @Inject constructor(
             medicationRepository.update(updated)
 
             if (updated.isActive) {
-                medicationRepository.getSchedules(medicationId).forEach { s ->
-                    scheduleNextDoseUseCase(medicationId, s.id)
-                }
+                generateUpcomingDosesUseCase(medicationId)
             } else {
                 val now = Instant.now()
                 medicationRepository.getSchedules(medicationId).forEach { s ->

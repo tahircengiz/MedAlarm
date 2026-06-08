@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Per-app language support (Android 13+). Required for
+    AppCompatDelegate.setApplicationLocales / LocaleManager.setApplicationLocales
+    to actually take effect.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="tr" />
+</locale-config>

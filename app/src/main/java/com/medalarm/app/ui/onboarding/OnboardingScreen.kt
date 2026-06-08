@@ -218,8 +218,28 @@ private fun DisclaimerStep(accepted: Boolean, onAcceptChange: (Boolean) -> Unit)
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
+            // Pinned TR + EN versions, regardless of the user's current locale.
+            // The user picks their language in the next step; here we want them
+            // to be able to read the disclaimer in whichever they understand.
             Text(
-                stringResource(R.string.disclaimer_full_body),
+                "Türkçe",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.disclaimer_full_body_tr),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(Modifier.height(24.dp))
+            Text(
+                "English",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.disclaimer_full_body_en),
                 style = MaterialTheme.typography.bodyMedium
             )
         }
