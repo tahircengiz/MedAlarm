@@ -105,4 +105,39 @@
     <string name="save">Kaydet</string>
     <string name="delete">Sil</string>
     <string name="edit">Düzenle</string>
+    <string name="add">Ekle</string>
+    <string name="optional">isteğe bağlı</string>
+
+    <!-- Add medication -->
+    <string name="add_med_title">Yeni ilaç</string>
+    <string name="add_med_section_basics">Temel bilgiler</string>
+    <string name="add_med_section_schedule">Program</string>
+    <string name="add_med_section_treatment">Tedavi süresi</string>
+    <string name="add_med_section_stock">Stok takibi</string>
+    <string name="add_med_section_notes">Notlar</string>
+
+    <string name="add_med_name">Ad</string>
+    <string name="add_med_name_hint">örn. Aspirin</string>
+    <string name="add_med_name_required">Ad zorunlu</string>
+    <string name="add_med_unit">Ölçü birimi</string>
+    <string name="add_med_dosage">Bir alımdaki doz</string>
+    <string name="add_med_dosage_hint">örn. 1</string>
+    <string name="add_med_dosage_invalid">0\'dan büyük bir sayı gir</string>
+
+    <string name="add_med_times">Gün içindeki saatler</string>
+    <string name="add_med_add_time">Saat ekle</string>
+    <string name="add_med_meal_relation">Ne zaman alınacak</string>
+
+    <string name="add_med_start_date">Başlangıç tarihi</string>
+    <string name="add_med_end_date">Bitiş tarihi</string>
+    <string name="add_med_open_ended">Süresiz</string>
+
+    <string name="add_med_track_stock">Bu ilaç için stok takip et</string>
+    <string name="add_med_stock_amount">Mevcut miktar</string>
+    <string name="add_med_stock_threshold">Şu seviyenin altına düşünce uyar</string>
+
+    <string name="add_med_notes_hint">Ek bilgi — örn. bol su ile al</string>
+
+    <string name="add_med_save_error">İlaç kaydedilemedi</string>
+    <string name="add_med_at_least_one_time">En az bir saat ekle</string>
 </resources>

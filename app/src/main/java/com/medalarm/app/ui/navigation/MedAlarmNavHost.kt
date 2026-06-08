@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.medalarm.app.ui.home.HomeScreen
+import com.medalarm.app.ui.medication.AddMedicationScreen
 import com.medalarm.app.ui.onboarding.OnboardingScreen
 
 @Composable
@@ -44,10 +45,16 @@ fun MedAlarmNavHost(
             )
         }
 
+        composable(Routes.ADD_MEDICATION) {
+            AddMedicationScreen(
+                onClose = { navController.popBackStack() },
+                onSaved = { navController.popBackStack() }
+            )
+        }
+
         // Stubs for screens that land in subsequent commits.
         composable(Routes.SETTINGS) { PlaceholderScreen("Settings") }
         composable(Routes.SETTINGS_SYSTEM_STATUS) { PlaceholderScreen("System Status") }
-        composable(Routes.ADD_MEDICATION) { PlaceholderScreen("Add Medication") }
         composable(Routes.HISTORY) { PlaceholderScreen("History") }
     }
 }

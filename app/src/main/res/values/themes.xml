@@ -4,7 +4,7 @@
         Minimal AppCompat-style theme that hosts the Compose Activity.
         The real M3 theming happens inside Compose (Theme.kt).
     -->
-    <style name="Theme.MedAlarm" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.MedAlarm" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>

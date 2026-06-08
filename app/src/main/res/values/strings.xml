@@ -115,4 +115,39 @@
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
+    <string name="add">Add</string>
+    <string name="optional">optional</string>
+
+    <!-- Add medication -->
+    <string name="add_med_title">New medication</string>
+    <string name="add_med_section_basics">Basics</string>
+    <string name="add_med_section_schedule">Schedule</string>
+    <string name="add_med_section_treatment">Treatment window</string>
+    <string name="add_med_section_stock">Stock tracking</string>
+    <string name="add_med_section_notes">Notes</string>
+
+    <string name="add_med_name">Name</string>
+    <string name="add_med_name_hint">e.g. Aspirin</string>
+    <string name="add_med_name_required">Name is required</string>
+    <string name="add_med_unit">Unit</string>
+    <string name="add_med_dosage">Dose per intake</string>
+    <string name="add_med_dosage_hint">e.g. 1</string>
+    <string name="add_med_dosage_invalid">Enter a number greater than 0</string>
+
+    <string name="add_med_times">Times during the day</string>
+    <string name="add_med_add_time">Add time</string>
+    <string name="add_med_meal_relation">When to take</string>
+
+    <string name="add_med_start_date">Start date</string>
+    <string name="add_med_end_date">End date</string>
+    <string name="add_med_open_ended">Open-ended</string>
+
+    <string name="add_med_track_stock">Track stock for this medication</string>
+    <string name="add_med_stock_amount">Current amount</string>
+    <string name="add_med_stock_threshold">Warn when below</string>
+
+    <string name="add_med_notes_hint">Any extra info — e.g. take with water</string>
+
+    <string name="add_med_save_error">Could not save medication</string>
+    <string name="add_med_at_least_one_time">Add at least one time</string>
 </resources>
