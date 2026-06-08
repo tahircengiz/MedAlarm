@@ -7,15 +7,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import android.content.Intent
+import android.provider.Settings as AndroidSettings
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
+import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.HealthAndSafety
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Medication
+import androidx.compose.material.icons.outlined.NotificationsActive
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +51,7 @@ import com.medalarm.app.R
 import com.medalarm.app.domain.model.AppLanguage
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
+import com.medalarm.app.notification.NotificationChannels
 
 @Composable
 fun SettingsScreen(
@@ -88,19 +101,32 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SectionHeader(title: String) {
-    Text(
-        title,
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary,
+private fun SectionHeader(title: String, icon: ImageVector? = null) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-    )
+    ) {
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+        }
+        Text(
+            title,
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @Composable
 private fun AppearanceSection(s: UserSettings, vm: SettingsViewModel) {
     Column {
-        SectionHeader(stringResource(R.string.settings_section_appearance))
+        SectionHeader(stringResource(R.string.settings_section_appearance), Icons.Outlined.Palette)
 
         Text(stringResource(R.string.settings_theme), modifier = Modifier.padding(horizontal = 24.dp), style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(4.dp))
@@ -139,8 +165,9 @@ private fun AppearanceSection(s: UserSettings, vm: SettingsViewModel) {
 
 @Composable
 private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {
+    val ctx = LocalContext.current
     Column {
-        SectionHeader(stringResource(R.string.settings_section_reminders))
+        SectionHeader(stringResource(R.string.settings_section_reminders), Icons.Outlined.NotificationsActive)
 
         SwitchRow(
             label = stringResource(R.string.settings_vibration),
@@ -151,6 +178,21 @@ private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {
             label = stringResource(R.string.settings_tts),
             checked = s.ttsEnabled,
             onChange = vm::setTts
+        )
+
+        // Notification sound — Android 8+ only allows changing channel sound via
+        // system settings UI (channel sound is immutable after creation).
+        // Deep-link straight there.
+        NavigationRow(
+            label = stringResource(R.string.settings_notification_sound),
+            onClick = {
+                val intent = Intent(AndroidSettings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+                    putExtra(AndroidSettings.EXTRA_APP_PACKAGE, ctx.packageName)
+                    putExtra(AndroidSettings.EXTRA_CHANNEL_ID, NotificationChannels.ID_MEDICATION_ALARM)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                }
+                runCatching { ctx.startActivity(intent) }
+            }
         )
 
         Spacer(Modifier.height(8.dp))
@@ -205,17 +247,20 @@ private fun SystemSection(
     onOpenMedications: () -> Unit
 ) {
     Column {
-        SectionHeader(stringResource(R.string.settings_section_system))
+        SectionHeader(stringResource(R.string.settings_section_system), Icons.Outlined.Tune)
         NavigationRow(
             label = stringResource(R.string.med_list_title),
+            leadingIcon = Icons.Outlined.Medication,
             onClick = onOpenMedications
         )
         NavigationRow(
             label = stringResource(R.string.settings_open_system_status),
+            leadingIcon = Icons.Outlined.HealthAndSafety,
             onClick = onOpenSystemStatus
         )
         NavigationRow(
             label = stringResource(R.string.backup_open_section),
+            leadingIcon = Icons.Outlined.Backup,
             onClick = onOpenBackup
         )
     }
@@ -224,15 +269,35 @@ private fun SystemSection(
 @Composable
 private fun AboutSection() {
     Column {
-        SectionHeader(stringResource(R.string.settings_section_about))
+        SectionHeader(stringResource(R.string.settings_section_about), Icons.Outlined.Info)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(stringResource(R.string.settings_about_version), style = MaterialTheme.typography.bodyLarge)
-            Text("${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                if (BuildConfig.VERSION_NAME.contains("beta", ignoreCase = true)) {
+                    Spacer(Modifier.width(8.dp))
+                    Surface(
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text(
+                            stringResource(R.string.settings_version_beta),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
         }
         Row(
             modifier = Modifier
@@ -319,7 +384,11 @@ private fun SliderRow(
 }
 
 @Composable
-private fun NavigationRow(label: String, onClick: () -> Unit) {
+private fun NavigationRow(
+    label: String,
+    leadingIcon: ImageVector? = null,
+    onClick: () -> Unit
+) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.surface,
@@ -331,6 +400,15 @@ private fun NavigationRow(label: String, onClick: () -> Unit) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (leadingIcon != null) {
+                Icon(
+                    leadingIcon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(22.dp)
+                )
+                Spacer(Modifier.width(16.dp))
+            }
             Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
             Icon(
                 Icons.Outlined.ChevronRight,

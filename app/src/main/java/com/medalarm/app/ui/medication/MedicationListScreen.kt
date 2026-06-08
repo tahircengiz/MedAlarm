@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.Medication
+import com.medalarm.app.ui.common.resolveMedicationColor
 
 @Composable
 fun MedicationListScreen(
@@ -107,6 +111,7 @@ fun MedicationListScreen(
 
 @Composable
 private fun MedicationRow(medication: Medication, onClick: () -> Unit, muted: Boolean = false) {
+    val accent = resolveMedicationColor(medication.colorHex)
     Surface(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
@@ -120,6 +125,23 @@ private fun MedicationRow(medication: Medication, onClick: () -> Unit, muted: Bo
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Surface(
+                color = if (muted) accent.copy(alpha = 0.4f) else accent,
+                shape = CircleShape,
+                modifier = Modifier.size(40.dp)
+            ) {
+                androidx.compose.foundation.layout.Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Text(
+                        text = medication.name.firstOrNull()?.uppercase().orEmpty(),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = androidx.compose.ui.graphics.Color.White
+                    )
+                }
+            }
+            Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     medication.name,

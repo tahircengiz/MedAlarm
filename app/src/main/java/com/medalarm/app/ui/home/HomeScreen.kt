@@ -2,24 +2,32 @@
 
 package com.medalarm.app.ui.home
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.HourglassEmpty
 import androidx.compose.material.icons.outlined.Medication
+import androidx.compose.material.icons.outlined.RemoveCircle
+import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.Button
@@ -53,6 +61,7 @@ import com.medalarm.app.domain.model.DoseLog
 import com.medalarm.app.domain.model.DoseStatus
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.permission.SystemHealthReport
+import com.medalarm.app.ui.common.resolveMedicationColor
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -226,9 +235,9 @@ private fun DoseList(
 
 @Composable
 private fun DoseCard(dose: DoseLog, medication: Medication, onClick: () -> Unit) {
+    val accent = resolveMedicationColor(medication.colorHex)
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = when (dose.status) {
@@ -242,25 +251,49 @@ private fun DoseCard(dose: DoseLog, medication: Medication, onClick: () -> Unit)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(medication.name, style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = "${formatTime(dose)} · ${formatDose(medication)}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Text(
-                text = dose.status.name,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            // Per-medication accent strip
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier
+                    .width(6.dp)
+                    .fillMaxHeight()
+                    .background(accent)
             )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(medication.name, style = MaterialTheme.typography.titleMedium)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = "${formatTime(dose)} · ${formatDose(medication)}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                StatusBadge(dose.status)
+            }
         }
     }
+}
+
+@Composable
+private fun StatusBadge(status: DoseStatus) {
+    val (icon, tint, label) = when (status) {
+        DoseStatus.TAKEN -> Triple(Icons.Outlined.CheckCircle, MaterialTheme.colorScheme.primary, "✓")
+        DoseStatus.MISSED -> Triple(Icons.Outlined.Warning, MaterialTheme.colorScheme.error, "!")
+        DoseStatus.SKIPPED -> Triple(Icons.Outlined.RemoveCircle, MaterialTheme.colorScheme.onSurfaceVariant, "—")
+        DoseStatus.SNOOZED -> Triple(Icons.Outlined.HourglassEmpty, MaterialTheme.colorScheme.tertiary, "…")
+        DoseStatus.PENDING -> Triple(Icons.Outlined.Schedule, MaterialTheme.colorScheme.onSurfaceVariant, "")
+    }
+    @Suppress("UNUSED_VARIABLE")
+    val _label = label  // kept for future text-mode rendering
+    Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(24.dp))
 }
 
 @Composable

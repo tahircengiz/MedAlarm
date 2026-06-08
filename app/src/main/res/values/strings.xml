@@ -61,6 +61,11 @@
     <string name="settings_language_tr">Türkçe</string>
     <string name="settings_language_en">English</string>
 
+    <string name="add_med_color">Accent color</string>
+    <string name="settings_notification_sound">Notification sound &amp; vibration</string>
+    <string name="settings_notification_sound_hint">Opens system settings for the medication reminder channel.</string>
+    <string name="settings_version_beta">Beta</string>
+
     <!-- System status -->
     <string name="settings_system_status">System status</string>
     <string name="status_notifications_permission">Notification permission</string>

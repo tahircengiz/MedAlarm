@@ -162,6 +162,11 @@
     <string name="settings_tts">İlaç adını sesli oku</string>
     <string name="settings_low_stock_default">Varsayılan düşük stok eşiği</string>
 
+    <string name="add_med_color">Renk</string>
+    <string name="settings_notification_sound">Bildirim sesi ve titreşim</string>
+    <string name="settings_notification_sound_hint">İlaç hatırlatma kanalının sistem ayarlarını açar.</string>
+    <string name="settings_version_beta">Beta</string>
+
     <string name="settings_open_system_status">Sistem durumu</string>
     <string name="settings_open_disclaimer">Sorumluluk metni</string>
 

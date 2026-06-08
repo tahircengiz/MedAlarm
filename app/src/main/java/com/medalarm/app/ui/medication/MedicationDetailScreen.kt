@@ -45,6 +45,7 @@ import com.medalarm.app.R
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.Schedule
+import com.medalarm.app.ui.common.resolveMedicationColor
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -167,15 +168,16 @@ fun MedicationDetailScreen(
 
 @Composable
 private fun HeaderCard(med: Medication) {
+    val accent = resolveMedicationColor(med.colorHex)
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = CardDefaults.cardColors(containerColor = accent)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 med.name,
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = androidx.compose.ui.graphics.Color.White
             )
             Spacer(Modifier.height(4.dp))
             val amount = if (med.dosageAmount % 1f == 0f) med.dosageAmount.toInt().toString()
@@ -183,7 +185,7 @@ private fun HeaderCard(med: Medication) {
             Text(
                 "$amount ${med.unit.name.lowercase()}",
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
             )
         }
     }

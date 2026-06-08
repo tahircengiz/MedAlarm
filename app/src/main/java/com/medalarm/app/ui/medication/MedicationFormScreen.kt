@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -179,6 +180,29 @@ private fun BasicsSection(state: MedicationFormState, vm: MedicationFormViewMode
                     onClick = { vm.update { it.copy(unit = unit) } },
                     label = { Text(unit.localizedLabel()) }
                 )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+        Text(stringResource(R.string.add_med_color), style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            com.medalarm.app.ui.common.MedicationPalette.swatches.forEach { swatch ->
+                val isSelected = state.colorHex == swatch.hex
+                Surface(
+                    onClick = { vm.update { it.copy(colorHex = swatch.hex) } },
+                    color = swatch.color,
+                    shape = androidx.compose.foundation.shape.CircleShape,
+                    modifier = Modifier.size(36.dp),
+                    border = if (isSelected) androidx.compose.foundation.BorderStroke(
+                        3.dp,
+                        MaterialTheme.colorScheme.onSurface
+                    ) else null
+                ) { Box(Modifier.size(36.dp)) {} }
             }
         }
     }

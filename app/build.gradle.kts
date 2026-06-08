@@ -15,8 +15,13 @@ android {
         applicationId = "com.medalarm.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-dev"
+        // Versioning policy:
+        //   versionName follows semver — major.minor.patch + pre-release suffix
+        //   versionCode is monotonically increasing — bump for every CI-released build
+        //   The CI release process bumps versionCode automatically; do not edit
+        //   versionCode manually except for major resets at a final release.
+        versionCode = 2
+        versionName = "0.1.0-beta1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
