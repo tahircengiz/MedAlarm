@@ -83,6 +83,12 @@ jobs:
       - name: Run unit tests
         run: gradle testDebugUnitTest --no-daemon
 
+      # Catch release-only fatal lint (lintVitalRelease) here, before tagging —
+      # so the release workflow never fails on a lint issue at tag time.
+      # No signing needed: lint only analyzes sources/manifest.
+      - name: Lint (release fatal checks)
+        run: gradle lintVitalRelease --no-daemon
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:

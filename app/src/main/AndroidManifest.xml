@@ -58,8 +58,25 @@
         </activity>
 
         <!--
-            Receivers — declared but not implemented yet; concrete classes will be added
-            in the alarm/scheduling commit.
+            On-demand WorkManager initialization: MedAlarmApplication implements
+            Configuration.Provider, so the default WorkManagerInitializer that
+            androidx.startup would run MUST be removed, or WorkManager initializes
+            twice. (lintVitalRelease enforces this.)
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+        <!-- Alarm + boot/time-change broadcast receivers. -->
+        <!--
+            Receivers — concrete classes live in data/alarm/.
         -->
         <receiver
             android:name=".data.alarm.MedicationAlarmReceiver"
