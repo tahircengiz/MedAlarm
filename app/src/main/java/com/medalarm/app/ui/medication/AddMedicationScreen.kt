@@ -27,8 +27,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -148,69 +146,37 @@ private fun BasicsSection(state: AddMedicationFormState, vm: AddMedicationViewMo
         )
 
         Spacer(Modifier.height(12.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            UnitDropdown(
-                current = state.unit,
-                onSelect = { u -> vm.update { it.copy(unit = u) } },
-                modifier = Modifier.weight(1f)
-            )
-            OutlinedTextField(
-                value = state.dosageRaw,
-                onValueChange = { v ->
-                    vm.update { it.copy(dosageRaw = v.filter { c -> c.isDigit() || c == '.' }) }
-                },
-                label = { Text(stringResource(R.string.add_med_dosage)) },
-                placeholder = { Text(stringResource(R.string.add_med_dosage_hint)) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                singleLine = true,
-                isError = state.dosageRaw.isNotEmpty() && state.dosageError,
-                supportingText = {
-                    if (state.dosageRaw.isNotEmpty() && state.dosageError) {
-                        Text(stringResource(R.string.add_med_dosage_invalid))
-                    }
-                },
-                modifier = Modifier.weight(1f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun UnitDropdown(
-    current: MedicationUnit,
-    onSelect: (MedicationUnit) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-    ) {
         OutlinedTextField(
-            value = current.localizedLabel(),
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(stringResource(R.string.add_med_unit)) },
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor()
+            value = state.dosageRaw,
+            onValueChange = { v ->
+                vm.update { it.copy(dosageRaw = v.filter { c -> c.isDigit() || c == '.' }) }
+            },
+            label = { Text(stringResource(R.string.add_med_dosage)) },
+            placeholder = { Text(stringResource(R.string.add_med_dosage_hint)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            singleLine = true,
+            isError = state.dosageRaw.isNotEmpty() && state.dosageError,
+            supportingText = {
+                if (state.dosageRaw.isNotEmpty() && state.dosageError) {
+                    Text(stringResource(R.string.add_med_dosage_invalid))
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
-        androidx.compose.material3.ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
+
+        Spacer(Modifier.height(12.dp))
+        Text(stringResource(R.string.add_med_unit), style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.height(8.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
             MedicationUnit.values().forEach { unit ->
-                DropdownMenuItem(
-                    text = { Text(unit.localizedLabel()) },
-                    onClick = {
-                        onSelect(unit)
-                        expanded = false
-                    }
+                FilterChip(
+                    selected = state.unit == unit,
+                    onClick = { vm.update { it.copy(unit = unit) } },
+                    label = { Text(unit.localizedLabel()) }
                 )
             }
         }

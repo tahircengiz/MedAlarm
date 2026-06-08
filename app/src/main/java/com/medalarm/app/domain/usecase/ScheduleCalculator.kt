@@ -29,18 +29,20 @@ class ScheduleCalculator @Inject constructor() {
      * Returns null only if the schedule is somehow exhausted (e.g. WEEKLY_DAYS
      * with no days set — caller should have validated upstream).
      */
-    fun nextFireTime(schedule: Schedule, after: Instant): Instant? = when (schedule.type) {
-        ScheduleType.DAILY_TIMES -> nextDailyTimes(schedule.times, after)
-        ScheduleType.INTERVAL_HOURS -> nextInterval(
-            intervalHours = schedule.intervalHours ?: return null,
-            startTime = schedule.intervalStartTime ?: return null,
-            after = after
-        )
-        ScheduleType.WEEKLY_DAYS -> nextWeekly(
-            times = schedule.times,
-            daysOfWeek = schedule.daysOfWeek,
-            after = after
-        )
+    fun nextFireTime(schedule: Schedule, after: Instant): Instant? {
+        return when (schedule.type) {
+            ScheduleType.DAILY_TIMES -> nextDailyTimes(schedule.times, after)
+            ScheduleType.INTERVAL_HOURS -> {
+                val intervalHours = schedule.intervalHours ?: return null
+                val startTime = schedule.intervalStartTime ?: return null
+                nextInterval(intervalHours, startTime, after)
+            }
+            ScheduleType.WEEKLY_DAYS -> nextWeekly(
+                times = schedule.times,
+                daysOfWeek = schedule.daysOfWeek,
+                after = after
+            )
+        }
     }
 
     private fun nextDailyTimes(times: List<LocalTime>, after: Instant): Instant? {

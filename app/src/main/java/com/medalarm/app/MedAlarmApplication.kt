@@ -2,10 +2,22 @@ package com.medalarm.app
 
 import android.app.Application
 import android.os.StrictMode
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.medalarm.app.domain.model.AppLanguage
+import com.medalarm.app.domain.repository.SettingsRepository
 import com.medalarm.app.notification.NotificationChannels
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -14,6 +26,11 @@ class MedAlarmApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
+    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     override fun onCreate() {
         super.onCreate()
@@ -25,6 +42,26 @@ class MedAlarmApplication : Application(), Configuration.Provider {
 
         // Channels are safe to (re)create at every boot — Android merges by ID.
         NotificationChannels.createAll(this)
+
+        // Apply the persisted language preference whenever it changes. AppCompatDelegate
+        // handles configuration changes and Activity recreation for us.
+        settingsRepository.settings
+            .map { it.language }
+            .distinctUntilChanged()
+            .onEach { applyLanguage(it) }
+            .launchIn(appScope)
+    }
+
+    private suspend fun applyLanguage(language: AppLanguage) {
+        val tag = when (language) {
+            AppLanguage.SYSTEM -> ""           // empty list = follow system
+            AppLanguage.TR -> "tr"
+            AppLanguage.EN -> "en"
+        }
+        // setApplicationLocales must be called on the main thread.
+        withContext(Dispatchers.Main) {
+            AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag))
+        }
     }
 
     /**

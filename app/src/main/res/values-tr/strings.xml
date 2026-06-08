@@ -140,4 +140,24 @@
 
     <string name="add_med_save_error">İlaç kaydedilemedi</string>
     <string name="add_med_at_least_one_time">En az bir saat ekle</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_section_reminders">Hatırlatmalar</string>
+    <string name="settings_section_system">Sistem</string>
+    <string name="settings_section_about">Hakkında</string>
+
+    <string name="settings_snooze_minutes">Erteleme süresi (dakika)</string>
+    <string name="settings_snooze_count">Maks. erteleme sayısı</string>
+    <string name="settings_snooze_unlimited">Sınırsız</string>
+    <string name="settings_vibration">Alarmda titret</string>
+    <string name="settings_tts">İlaç adını sesli oku</string>
+    <string name="settings_low_stock_default">Varsayılan düşük stok eşiği</string>
+
+    <string name="settings_open_system_status">Sistem durumu</string>
+    <string name="settings_open_disclaimer">Sorumluluk metni</string>
+
+    <string name="settings_about_version">Sürüm</string>
+    <string name="settings_about_source">GitHub kaynak kodu</string>
 </resources>

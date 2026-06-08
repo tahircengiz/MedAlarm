@@ -150,4 +150,24 @@
 
     <string name="add_med_save_error">Could not save medication</string>
     <string name="add_med_at_least_one_time">Add at least one time</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_reminders">Reminders</string>
+    <string name="settings_section_system">System</string>
+    <string name="settings_section_about">About</string>
+
+    <string name="settings_snooze_minutes">Snooze duration (minutes)</string>
+    <string name="settings_snooze_count">Max snooze count</string>
+    <string name="settings_snooze_unlimited">Unlimited</string>
+    <string name="settings_vibration">Vibrate on alarm</string>
+    <string name="settings_tts">Speak medication name aloud</string>
+    <string name="settings_low_stock_default">Default low-stock threshold</string>
+
+    <string name="settings_open_system_status">System status</string>
+    <string name="settings_open_disclaimer">Disclaimer / Responsibility</string>
+
+    <string name="settings_about_version">Version</string>
+    <string name="settings_about_source">Source code on GitHub</string>
 </resources>
