@@ -20,11 +20,22 @@ jobs:
       - name: Forbid INTERNET permission in manifest
         run: |
           set -e
-          if grep -rE 'android\.permission\.INTERNET' app/src/ 2>/dev/null; then
-            echo "❌ INTERNET permission found — bloatware-free manifesto violated."
-            exit 1
-          fi
-          echo "✅ No INTERNET permission."
+          # Parse each AndroidManifest.xml with xmllint and look for an actual
+          # <uses-permission> element naming INTERNET. xmllint ignores XML
+          # comments natively, so explanatory text in the manifest is safe.
+          shopt -s globstar nullglob
+          FAIL=0
+          for f in app/src/**/AndroidManifest.xml; do
+            HITS=$(xmllint --xpath \
+              "count(//uses-permission[@*[local-name()='name' and .='android.permission.INTERNET']])" \
+              "$f" 2>/dev/null || echo 0)
+            if [ "$HITS" != "0" ]; then
+              echo "❌ INTERNET permission found in $f"
+              FAIL=1
+            fi
+          done
+          if [ "$FAIL" = "1" ]; then exit 1; fi
+          echo "✅ No INTERNET permission in any manifest."
 
       - name: Forbid analytics / ads / crash-reporting dependencies
         run: |

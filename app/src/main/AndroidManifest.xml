@@ -4,10 +4,9 @@
 
     <!--
         BLOATWARE-FREE MANIFESTO ENFORCEMENT:
-        The following permission is INTENTIONALLY ABSENT and must never be added:
-            <uses-permission android:name="android.permission.INTERNET" />
-        CI grep guard fails the build if it appears here.
-        Without INTERNET, no library in this app can make a network call — by design.
+        The INTERNET permission is INTENTIONALLY ABSENT and must never be added.
+        CI manifesto-guard fails the build if it appears as a real uses-permission tag.
+        Without it, no library in this app can make a network call — by design.
     -->
 
     <!-- Notifications (Android 13+) -->
