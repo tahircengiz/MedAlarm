@@ -7,13 +7,36 @@
     <string name="onboarding_welcome_title">Welcome to MedAlarm</string>
     <string name="onboarding_welcome_body">A free, ad-free, offline medication reminder. Your data never leaves this phone.</string>
     <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_back">Back</string>
     <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_done">Get started</string>
+    <string name="onboarding_step_indicator">Step %1$d of %2$d</string>
+
+    <string name="onboarding_language_title">Choose your language</string>
+    <string name="onboarding_theme_title">Choose your theme</string>
+    <string name="onboarding_permissions_title">Permissions to deliver reminders</string>
+    <string name="onboarding_permissions_subtitle">Without these, your medication alarms may not fire. We will walk you through them — you can change any of them later in Settings.</string>
 
     <!-- Disclaimer (short form for onboarding; long form is shown on a dedicated screen) -->
     <string name="disclaimer_title">Disclaimer</string>
     <string name="disclaimer_accept">I have read and accept</string>
     <string name="disclaimer_short">MedAlarm is not a medical device and does not provide medical advice. You are responsible for taking your medication correctly. Notifications may be delayed or missed due to Android battery management; do not rely on this app alone for life-critical medication.</string>
     <string name="disclaimer_full_link">Read full disclaimer</string>
+    <string name="disclaimer_full_body">MedAlarm is a free, open-source app written to help people take their medication on time. It is a social responsibility project. There are no ads in this app. No personal data is collected or transmitted to any server. No internet connection is required. Your data is stored only on your phone.\n\nMedAlarm is not a medical device. It does not provide medical advice, diagnosis, or treatment. This app is only a reminder tool. All responsibility for your medication lies with you:\n\n• Right medication, right dose, right time — you are responsible for the accuracy of the information you enter.\n• Your doctor\'s instructions always take priority. This app does not replace your doctor.\n• Notifications may not arrive. Android battery management, manufacturer optimizations, the phone being off, or the app being killed by the system can cause notifications to be delayed or missed entirely. Do not use this app as your only safety net.\n• Use a backup reminder for critical medications. For life-critical medications, do not rely on this app alone.\n• Consult your doctor for health concerns.\n\nThe developer cannot be held liable in any way for health issues, losses, or damages arising from missed or delayed notifications, or from data loss.\n\nBy using MedAlarm, you accept these terms.</string>
+
+    <!-- Permission step copy -->
+    <string name="permission_notification_title">Notification permission</string>
+    <string name="permission_notification_rationale">Required so MedAlarm can show reminders. Without this, no alarm will be visible.</string>
+    <string name="permission_exact_alarm_title">Exact alarm permission</string>
+    <string name="permission_exact_alarm_rationale">Required so reminders fire at the exact minute they are scheduled, even while your phone is asleep.</string>
+    <string name="permission_battery_title">Battery optimization exemption</string>
+    <string name="permission_battery_rationale">Recommended. Without this, Android may delay or skip your reminders to save battery.</string>
+    <string name="permission_oem_title">Background autostart</string>
+    <string name="permission_oem_rationale">Recommended on Xiaomi, Huawei, Oppo, Vivo, Samsung and similar devices. Without it, the system may kill MedAlarm in the background and miss reminders.</string>
+    <string name="permission_oem_confirm">I have enabled it</string>
+    <string name="permission_grant">Grant</string>
+    <string name="permission_open_settings">Open settings</string>
+    <string name="permission_granted">Granted</string>
 
     <!-- Theme / language settings -->
     <string name="settings_theme">Theme</string>
@@ -75,4 +98,21 @@
     <string name="stock_low_title">Low stock</string>
     <!-- %1$s = medication name, %2$s = amount + unit (e.g. "5 tablet") -->
     <string name="stock_low_body">%1$s is running low — %2$s left.</string>
+
+    <!-- Home -->
+    <string name="home_title">Today</string>
+    <string name="home_empty_title">No medications yet</string>
+    <string name="home_empty_body">Add your first medication to start receiving reminders.</string>
+    <string name="home_add_first">Add medication</string>
+    <string name="home_action_add">Add</string>
+    <string name="home_action_history">History</string>
+    <string name="home_action_settings">Settings</string>
+    <string name="home_critical_banner">MedAlarm cannot deliver reminders right now — tap to fix.</string>
+    <string name="home_no_doses_today">No doses scheduled for today.</string>
+
+    <!-- Common -->
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
 </resources>

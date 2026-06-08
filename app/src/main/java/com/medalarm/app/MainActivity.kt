@@ -4,35 +4,54 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import com.medalarm.app.domain.model.ThemeMode
+import com.medalarm.app.ui.main.MainViewModel
+import com.medalarm.app.ui.navigation.MedAlarmNavHost
+import com.medalarm.app.ui.navigation.Routes
+import com.medalarm.app.ui.navigation.rememberMedAlarmNavController
 import com.medalarm.app.ui.theme.MedAlarmTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel: MainViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            MedAlarmTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { padding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(padding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // Placeholder until onboarding + navigation lands.
-                        Text(stringResource(R.string.welcome_placeholder))
+            val settings by viewModel.settings.collectAsState()
+
+            val darkOverride = settings?.let { s ->
+                when (s.themeMode) {
+                    ThemeMode.SYSTEM -> null
+                    ThemeMode.LIGHT -> false
+                    ThemeMode.DARK -> true
+                }
+            }
+            val dynamicColor = settings?.useDynamicColor ?: true
+
+            MedAlarmTheme(darkTheme = darkOverride, dynamicColor = dynamicColor) {
+                when {
+                    settings == null -> SplashSurface()
+                    else -> {
+                        val startDestination = if (settings!!.onboardingCompleted) {
+                            Routes.HOME
+                        } else {
+                            Routes.ONBOARDING
+                        }
+                        val navController = rememberMedAlarmNavController()
+                        MedAlarmNavHost(navController = navController, startDestination = startDestination)
                     }
                 }
             }
@@ -40,10 +59,13 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
+/** Solid theme-colored surface shown while [MainViewModel.settings] is still loading.
+ *  Prevents the visible flash from default theme → user-preferred theme. */
 @Composable
-private fun WelcomePreview() {
-    MedAlarmTheme {
-        Text("MedAlarm")
-    }
+private fun SplashSurface() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    )
 }

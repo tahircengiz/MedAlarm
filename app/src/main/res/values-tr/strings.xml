@@ -6,12 +6,35 @@
     <string name="onboarding_welcome_title">MedAlarm\'a hoş geldin</string>
     <string name="onboarding_welcome_body">Ücretsiz, reklamsız ve çevrimdışı çalışan bir ilaç hatırlatma uygulaması. Veriler hiçbir zaman bu telefondan dışarı çıkmaz.</string>
     <string name="onboarding_continue">Devam et</string>
+    <string name="onboarding_back">Geri</string>
     <string name="onboarding_skip">Atla</string>
+    <string name="onboarding_done">Başla</string>
+    <string name="onboarding_step_indicator">Adım %1$d / %2$d</string>
+
+    <string name="onboarding_language_title">Dilini seç</string>
+    <string name="onboarding_theme_title">Temanı seç</string>
+    <string name="onboarding_permissions_title">Hatırlatmalar için izinler</string>
+    <string name="onboarding_permissions_subtitle">Bu izinler olmadan ilaç alarmların çalışmayabilir. Sırasıyla yapılandıracağız — istediğin zaman Ayarlar\'dan değiştirebilirsin.</string>
 
     <string name="disclaimer_title">Sorumluluk metni</string>
     <string name="disclaimer_accept">Okudum ve kabul ediyorum</string>
     <string name="disclaimer_short">MedAlarm bir tıbbi cihaz değildir, tıbbi tavsiye vermez. İlaçlarınızı doğru almak sizin sorumluluğunuzdadır. Android pil yönetimi nedeniyle bildirimler gecikebilir veya gelmeyebilir; hayati öneme sahip ilaçlar için yalnızca bu uygulamaya güvenmeyin.</string>
     <string name="disclaimer_full_link">Tam metni oku</string>
+    <string name="disclaimer_full_body">MedAlarm, insanların ilaçlarını zamanında almasına yardımcı olmak için yazılmış, ücretsiz ve açık kaynaklı bir uygulamadır. Bir sosyal sorumluluk projesidir. Uygulamada reklam yoktur. Hiçbir kişisel veri toplanmaz, sunucuya gönderilmez. İnternet bağlantısı gerektirmez. Verileriniz yalnızca telefonunuzda saklanır.\n\nMedAlarm bir tıbbi cihaz değildir. Tıbbi tavsiye, teşhis veya tedavi sunmaz. Bu uygulama yalnızca bir hatırlatma aracıdır. İlaçlarınızla ilgili tüm sorumluluk size aittir:\n\n• Doğru ilaç, doğru doz, doğru zaman — uygulamaya girdiğiniz bilgilerin doğruluğundan siz sorumlusunuz.\n• Doktorunuzun talimatları her zaman önceliklidir. Bu uygulama doktorunuzun yerini almaz.\n• Bildirimler ulaşmayabilir. Android işletim sistemi, telefon üreticisinin pil tasarrufu ayarları, telefonun kapalı olması veya uygulamanın sistem tarafından durdurulması gibi durumlarda bildirimler gecikebilir veya hiç gelmeyebilir. Uygulamayı tek güvenlik kaynağı olarak kullanmayın.\n• Kritik ilaçlar için yedek hatırlatıcı kullanın. Hayati öneme sahip ilaçlarınızı almak için yalnızca bu uygulamaya güvenmeyin.\n• Sağlık sorunları için doktorunuza danışın.\n\nUygulamanın geliştiricisi; bildirimlerin gelmemesi, geç gelmesi veya verilerin kaybolması sonucu oluşabilecek sağlık sorunlarından, kayıplardan veya zararlardan hiçbir şekilde sorumlu tutulamaz.\n\nMedAlarm\'ı kullanarak bu şartları kabul etmiş sayılırsınız.</string>
+
+    <!-- Permission step copy -->
+    <string name="permission_notification_title">Bildirim izni</string>
+    <string name="permission_notification_rationale">MedAlarm\'ın hatırlatma gösterebilmesi için gerekli. Bu izin olmadan hiçbir alarm görünmez.</string>
+    <string name="permission_exact_alarm_title">Tam zamanlı alarm izni</string>
+    <string name="permission_exact_alarm_rationale">Hatırlatmaların planlandığı tam dakikada — telefon uykudayken bile — çalması için gerekli.</string>
+    <string name="permission_battery_title">Pil optimizasyonu muafiyeti</string>
+    <string name="permission_battery_rationale">Önerilir. Bu olmadan Android, pili korumak için hatırlatmaları geciktirebilir veya atlayabilir.</string>
+    <string name="permission_oem_title">Arka planda çalışma izni</string>
+    <string name="permission_oem_rationale">Xiaomi, Huawei, Oppo, Vivo, Samsung gibi cihazlarda önerilir. Bu olmadan sistem MedAlarm\'ı arka planda durdurup hatırlatmaları kaçırabilir.</string>
+    <string name="permission_oem_confirm">Etkinleştirdim</string>
+    <string name="permission_grant">İzin ver</string>
+    <string name="permission_open_settings">Ayarları aç</string>
+    <string name="permission_granted">Verildi</string>
 
     <string name="settings_theme">Tema</string>
     <string name="settings_theme_system">Sistemi takip et</string>
@@ -65,4 +88,21 @@
 
     <string name="stock_low_title">Stok azalıyor</string>
     <string name="stock_low_body">%1$s bitmek üzere — %2$s kaldı.</string>
+
+    <!-- Home -->
+    <string name="home_title">Bugün</string>
+    <string name="home_empty_title">Henüz ilaç yok</string>
+    <string name="home_empty_body">Hatırlatmaları almaya başlamak için ilk ilacını ekle.</string>
+    <string name="home_add_first">İlaç ekle</string>
+    <string name="home_action_add">Ekle</string>
+    <string name="home_action_history">Geçmiş</string>
+    <string name="home_action_settings">Ayarlar</string>
+    <string name="home_critical_banner">MedAlarm şu an hatırlatma gönderemiyor — düzeltmek için dokun.</string>
+    <string name="home_no_doses_today">Bugün için planlanmış doz yok.</string>
+
+    <!-- Common -->
+    <string name="cancel">İptal</string>
+    <string name="save">Kaydet</string>
+    <string name="delete">Sil</string>
+    <string name="edit">Düzenle</string>
 </resources>
