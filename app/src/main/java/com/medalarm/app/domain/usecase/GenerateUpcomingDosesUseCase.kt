@@ -7,7 +7,6 @@ import com.medalarm.app.domain.model.Schedule
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
 
@@ -33,9 +32,16 @@ class GenerateUpcomingDosesUseCase @Inject constructor(
     private val alarmRegistrar: AlarmRegistrar
 ) {
 
+    /**
+     * @param resetFuture when true, all future PENDING doses for this medication are
+     *        cancelled (alarms) and deleted before regenerating. Use this on schedule
+     *        edits so old-time rows don't linger alongside the new ones. Leave false
+     *        for the additive top-up path (new medication, alarm-fire, boot).
+     */
     suspend operator fun invoke(
         medicationId: Long,
         windowDays: Int = DEFAULT_WINDOW_DAYS,
+        resetFuture: Boolean = false,
         now: Instant = Instant.now()
     ) {
         val medication = medicationRepository.get(medicationId) ?: return
@@ -43,8 +49,19 @@ class GenerateUpcomingDosesUseCase @Inject constructor(
         val schedules = medicationRepository.getSchedules(medicationId)
         if (schedules.isEmpty()) return
 
+        if (resetFuture) {
+            // Cancel + delete stale future PENDING so an edited schedule doesn't
+            // leave the old times behind.
+            doseLogRepository.getFuturePending(medicationId, after = now).forEach { stale ->
+                alarmRegistrar.cancel(stale.id)
+            }
+            doseLogRepository.deleteFuturePending(medicationId, after = now)
+        }
+
         val zone = ZoneId.systemDefault()
-        val windowEnd = LocalDate.now(zone)
+        // Window end is derived from `now` (not the wall clock) so the result is
+        // deterministic and testable, and consistent with the cursor below.
+        val windowEnd = now.atZone(zone).toLocalDate()
             .plusDays(windowDays.toLong())
             .atStartOfDay(zone)
             .toInstant()

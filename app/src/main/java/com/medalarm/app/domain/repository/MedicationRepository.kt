@@ -26,6 +26,10 @@ interface MedicationRepository {
      */
     suspend fun adjustStock(id: Long, amount: Float): StockAdjustResult
 
+    /** Adds [amount] to stock (refill). Enables tracking if it was off. Clears the
+     *  low-stock-notified flag so a future drop re-notifies. */
+    suspend fun addStock(id: Long, amount: Float)
+
     suspend fun markLowStockNotified(id: Long)
 
     fun observeSchedules(medicationId: Long): Flow<List<Schedule>>

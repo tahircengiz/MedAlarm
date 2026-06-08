@@ -162,11 +162,11 @@ class MedicationFormViewModel @Inject constructor(
                         medicationRepository.updateSchedule(rewritten)
                     }
 
-                    // Regenerate the 14-day window with the updated schedule rules.
-                    // Existing PENDING rows at the same scheduledAt are kept (dedup),
-                    // so the user's interaction history isn't lost — only newly-shifted
-                    // times produce new rows.
-                    generateUpcomingDosesUseCase(editingId)
+                    // Regenerate the 14-day window from the updated schedule rules.
+                    // resetFuture=true clears stale future PENDING (old times) and
+                    // cancels their alarms, so an edited time doesn't leave the old
+                    // one behind. Past/acted doses are untouched (history preserved).
+                    generateUpcomingDosesUseCase(editingId, resetFuture = true)
                 }
                 onSaved()
             } catch (t: Throwable) {

@@ -91,4 +91,18 @@ interface DoseLogDao {
         WHERE status = 'PENDING' AND scheduledAt < :threshold
     """)
     suspend fun markOverdueAsMissed(threshold: Long): Int
+
+    /** Future, not-yet-acted doses for a medication — used to cancel their alarms
+     *  before deleting them when a schedule changes or a medication is paused. */
+    @Query("""
+        SELECT * FROM dose_logs
+        WHERE medicationId = :medId AND status = 'PENDING' AND scheduledAt > :after
+    """)
+    suspend fun getFuturePending(medId: Long, after: Long): List<DoseLogEntity>
+
+    @Query("""
+        DELETE FROM dose_logs
+        WHERE medicationId = :medId AND status = 'PENDING' AND scheduledAt > :after
+    """)
+    suspend fun deleteFuturePending(medId: Long, after: Long)
 }

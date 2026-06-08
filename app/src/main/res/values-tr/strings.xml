@@ -188,6 +188,10 @@
     <string name="med_detail_stock">Stok</string>
     <string name="med_detail_notes">Notlar</string>
     <string name="med_detail_open_ended">Süresiz</string>
+    <string name="med_add_stock">Stok ekle</string>
+    <string name="med_add_stock_title">Stok ekle</string>
+    <string name="med_add_stock_amount">Eklenecek miktar</string>
+    <string name="med_add_stock_confirm">Ekle</string>
 
     <!-- Backup -->
     <string name="backup_title">Yedekleme ve Dışa Aktar</string>

@@ -59,25 +59,37 @@ class MedicationDetailViewModel @Inject constructor(
             medicationRepository.update(updated)
 
             if (updated.isActive) {
-                generateUpcomingDosesUseCase(medicationId)
+                // Resume: clean regenerate from current schedules.
+                generateUpcomingDosesUseCase(medicationId, resetFuture = true)
             } else {
+                // Pause: cancel + delete ALL future PENDING so nothing lingers
+                // in Home/History for a paused medication.
                 val now = Instant.now()
-                medicationRepository.getSchedules(medicationId).forEach { s ->
-                    val next = doseLogRepository.findNextPending(medicationId, s.id, after = now)
-                    next?.let { alarmRegistrar.cancel(it.id) }
+                doseLogRepository.getFuturePending(medicationId, after = now).forEach {
+                    alarmRegistrar.cancel(it.id)
                 }
+                doseLogRepository.deleteFuturePending(medicationId, after = now)
             }
             onDone()
+        }
+    }
+
+    fun addStock(amount: Float) {
+        if (amount <= 0f) return
+        viewModelScope.launch {
+            medicationRepository.addStock(medicationId, amount)
         }
     }
 
     fun delete(onDone: () -> Unit) {
         viewModelScope.launch {
             val now = Instant.now()
-            medicationRepository.getSchedules(medicationId).forEach { s ->
-                val next = doseLogRepository.findNextPending(medicationId, s.id, after = now)
-                next?.let { alarmRegistrar.cancel(it.id) }
+            // Cancel every future alarm, then drop the rows so a deleted med leaves
+            // nothing scheduled. Past/acted doses remain for history.
+            doseLogRepository.getFuturePending(medicationId, after = now).forEach {
+                alarmRegistrar.cancel(it.id)
             }
+            doseLogRepository.deleteFuturePending(medicationId, after = now)
             medicationRepository.softDelete(medicationId)
             onDone()
         }

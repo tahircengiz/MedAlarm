@@ -67,6 +67,20 @@ internal class MedicationRepositoryImpl(
         StockAdjustResult(newStockAmount = newStock, crossedThreshold = crossed)
     }
 
+    override suspend fun addStock(id: Long, amount: Float) {
+        if (amount <= 0f) return
+        val med = medicationDao.getById(id) ?: return
+        // Enable tracking if it was off (stockAmount null) by starting from 0.
+        val current = med.stockAmount ?: 0f
+        medicationDao.update(
+            med.copy(
+                stockAmount = current + amount,
+                lowStockNotified = false,
+                updatedAt = Instant.now()
+            )
+        )
+    }
+
     override suspend fun markLowStockNotified(id: Long) {
         medicationDao.markLowStockNotified(id, Instant.now().toEpochMilli())
     }

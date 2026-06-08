@@ -209,6 +209,10 @@
     <string name="med_detail_stock">Stock</string>
     <string name="med_detail_notes">Notes</string>
     <string name="med_detail_open_ended">Open-ended</string>
+    <string name="med_add_stock">Add stock</string>
+    <string name="med_add_stock_title">Add stock</string>
+    <string name="med_add_stock_amount">Amount to add</string>
+    <string name="med_add_stock_confirm">Add</string>
 
     <!-- Backup -->
     <string name="backup_title">Backup &amp; Export</string>

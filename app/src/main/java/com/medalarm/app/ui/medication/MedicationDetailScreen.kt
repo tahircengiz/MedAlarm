@@ -57,6 +57,7 @@ fun MedicationDetailScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     var confirmDelete by remember { mutableStateOf(false) }
+    var showAddStock by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -114,11 +115,17 @@ fun MedicationDetailScreen(
                 val threshold = med.stockThreshold?.let { t ->
                     if (t % 1f == 0f) t.toInt().toString() else t.toString()
                 }
-                Text(
-                    "$amount ${med.unit.name.lowercase()}" +
-                        if (threshold != null) " (≤ $threshold ⚠️)" else "",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        "$amount ${med.unit.name.lowercase()}" +
+                            if (threshold != null) " (≤ $threshold ⚠️)" else "",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.weight(1f)
+                    )
+                    androidx.compose.material3.TextButton(onClick = { showAddStock = true }) {
+                        Text(stringResource(R.string.med_add_stock))
+                    }
+                }
             }
 
             if (!med.notes.isNullOrBlank()) {
@@ -159,6 +166,42 @@ fun MedicationDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { confirmDelete = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    if (showAddStock) {
+        var amountRaw by remember { mutableStateOf("") }
+        val amount = amountRaw.toFloatOrNull()
+        AlertDialog(
+            onDismissRequest = { showAddStock = false },
+            title = { Text(stringResource(R.string.med_add_stock_title)) },
+            text = {
+                androidx.compose.material3.OutlinedTextField(
+                    value = amountRaw,
+                    onValueChange = { v -> amountRaw = v.filter { it.isDigit() || it == '.' } },
+                    label = { Text(stringResource(R.string.med_add_stock_amount)) },
+                    singleLine = true,
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Decimal
+                    )
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = amount != null && amount > 0f,
+                    onClick = {
+                        amount?.let { viewModel.addStock(it) }
+                        showAddStock = false
+                    }
+                ) {
+                    Text(stringResource(R.string.med_add_stock_confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showAddStock = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             }

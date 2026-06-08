@@ -58,4 +58,11 @@ internal class DoseLogRepositoryImpl(
 
     override suspend fun markOverdueAsMissed(threshold: Instant): Int =
         dao.markOverdueAsMissed(threshold.toEpochMilli())
+
+    override suspend fun getFuturePending(medicationId: Long, after: Instant): List<DoseLog> =
+        dao.getFuturePending(medicationId, after.toEpochMilli()).map { it.toDomain() }
+
+    override suspend fun deleteFuturePending(medicationId: Long, after: Instant) {
+        dao.deleteFuturePending(medicationId, after.toEpochMilli())
+    }
 }

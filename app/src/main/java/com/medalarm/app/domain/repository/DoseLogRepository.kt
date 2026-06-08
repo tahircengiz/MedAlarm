@@ -28,4 +28,10 @@ interface DoseLogRepository {
 
     /** Bulk-flips PENDING doses older than [threshold] to MISSED. Returns count flipped. */
     suspend fun markOverdueAsMissed(threshold: Instant): Int
+
+    /** Future, not-yet-acted doses for a medication (scheduledAt > [after]). */
+    suspend fun getFuturePending(medicationId: Long, after: Instant): List<DoseLog>
+
+    /** Deletes future PENDING doses for a medication. Caller cancels their alarms first. */
+    suspend fun deleteFuturePending(medicationId: Long, after: Instant)
 }
