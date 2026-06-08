@@ -186,6 +186,7 @@ private class FakeDoseLogRepository : DoseLogRepository {
     override suspend fun markTaken(id: Long, at: Instant) = nyi()
     override suspend fun markSkipped(id: Long, at: Instant) = nyi()
     override suspend fun snooze(id: Long, until: Instant, at: Instant) = nyi()
+    override suspend fun revertToPending(id: Long) = nyi()
     override suspend fun markOverdueAsMissed(threshold: Instant) = nyi()
     private fun nyi(): Nothing = throw NotImplementedError("not used in test")
 }

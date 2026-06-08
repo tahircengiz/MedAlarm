@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
@@ -58,11 +59,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.MedicationUnit
+import com.medalarm.app.domain.model.ScheduleType
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun MedicationFormScreen(
@@ -230,70 +235,163 @@ private fun MealRelation.localizedLabel(): String = when (this) {
 
 @Composable
 private fun ScheduleSection(state: MedicationFormState, vm: MedicationFormViewModel) {
+    // Which schedule block the time picker is currently adding to (null = closed).
+    var timePickerForIndex by remember { mutableStateOf<Int?>(null) }
+
     Column {
         SectionLabel(stringResource(R.string.add_med_section_schedule))
         Spacer(Modifier.height(8.dp))
 
-        Text(stringResource(R.string.add_med_times), style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(8.dp))
+        state.schedules.forEachIndexed { index, draft ->
+            ScheduleBlock(
+                index = index,
+                draft = draft,
+                canRemove = state.schedules.size > 1,
+                vm = vm,
+                onAddTime = { timePickerForIndex = index }
+            )
+            Spacer(Modifier.height(12.dp))
+        }
 
-        var showTimePicker by remember { mutableStateOf(false) }
+        OutlinedButton(onClick = { vm.addScheduleDraft() }) {
+            Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(stringResource(R.string.add_med_add_schedule))
+        }
+    }
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            state.times.forEach { t ->
+    timePickerForIndex?.let { idx ->
+        TimePickerDialog(
+            onDismiss = { timePickerForIndex = null },
+            onTimeSelected = { t ->
+                vm.addTime(idx, t)
+                timePickerForIndex = null
+            }
+        )
+    }
+}
+
+@Composable
+private fun ScheduleBlock(
+    index: Int,
+    draft: ScheduleDraft,
+    canRemove: Boolean,
+    vm: MedicationFormViewModel,
+    onAddTime: () -> Unit
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = MaterialTheme.shapes.medium,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.add_med_schedule_n, index + 1),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
+                )
+                if (canRemove) {
+                    IconButton(onClick = { vm.removeScheduleDraft(index) }) {
+                        Icon(
+                            Icons.Outlined.Delete,
+                            contentDescription = stringResource(R.string.add_med_remove_schedule),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Type: every day vs specific days of week
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(
+                    selected = draft.type == ScheduleType.DAILY_TIMES,
+                    onClick = { vm.setScheduleType(index, ScheduleType.DAILY_TIMES) },
+                    label = { Text(stringResource(R.string.add_med_schedule_daily)) }
+                )
+                FilterChip(
+                    selected = draft.type == ScheduleType.WEEKLY_DAYS,
+                    onClick = { vm.setScheduleType(index, ScheduleType.WEEKLY_DAYS) },
+                    label = { Text(stringResource(R.string.add_med_schedule_weekly)) }
+                )
+            }
+
+            // Days of week (only for weekly)
+            if (draft.type == ScheduleType.WEEKLY_DAYS) {
+                Spacer(Modifier.height(12.dp))
+                Text(stringResource(R.string.add_med_days), style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(8.dp))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    DayOfWeek.values().forEach { day ->
+                        FilterChip(
+                            selected = day in draft.daysOfWeek,
+                            onClick = { vm.toggleDay(index, day) },
+                            label = { Text(day.getDisplayName(TextStyle.SHORT, Locale.getDefault())) }
+                        )
+                    }
+                }
+                if (draft.daysOfWeek.isEmpty()) {
+                    Text(
+                        stringResource(R.string.add_med_at_least_one_day),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
+
+            // Times
+            Spacer(Modifier.height(12.dp))
+            Text(stringResource(R.string.add_med_times), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                draft.times.forEach { t ->
+                    AssistChip(
+                        onClick = { vm.removeTime(index, t) },
+                        label = { Text(t.format(TIME_FMT)) },
+                        trailingIcon = {
+                            Icon(Icons.Outlined.Close, contentDescription = null, modifier = Modifier.size(16.dp))
+                        }
+                    )
+                }
                 AssistChip(
-                    onClick = { vm.removeTime(t) },
-                    label = { Text(t.format(TIME_FMT)) },
-                    trailingIcon = {
-                        Icon(Icons.Outlined.Close, contentDescription = null, modifier = Modifier.size(16.dp))
+                    onClick = onAddTime,
+                    label = { Text(stringResource(R.string.add_med_add_time)) },
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(16.dp))
                     }
                 )
             }
-            AssistChip(
-                onClick = { showTimePicker = true },
-                label = { Text(stringResource(R.string.add_med_add_time)) },
-                leadingIcon = {
-                    Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(16.dp))
-                }
-            )
-        }
-        if (state.timesError) {
-            Text(
-                stringResource(R.string.add_med_at_least_one_time),
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 6.dp)
-            )
-        }
-
-        if (showTimePicker) {
-            TimePickerDialog(
-                onDismiss = { showTimePicker = false },
-                onTimeSelected = { t ->
-                    vm.addTime(t)
-                    showTimePicker = false
-                }
-            )
-        }
-
-        Spacer(Modifier.height(16.dp))
-        Text(stringResource(R.string.add_med_meal_relation), style = MaterialTheme.typography.bodyMedium)
-        Spacer(Modifier.height(8.dp))
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            MealRelation.values().forEach { rel ->
-                FilterChip(
-                    selected = state.mealRelation == rel,
-                    onClick = { vm.update { it.copy(mealRelation = rel) } },
-                    label = { Text(rel.localizedLabel()) }
+            if (draft.times.isEmpty()) {
+                Text(
+                    stringResource(R.string.add_med_at_least_one_time),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 4.dp)
                 )
+            }
+
+            // Meal relation
+            Spacer(Modifier.height(12.dp))
+            Text(stringResource(R.string.add_med_meal_relation), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(8.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                MealRelation.values().forEach { rel ->
+                    FilterChip(
+                        selected = draft.mealRelation == rel,
+                        onClick = { vm.setScheduleMeal(index, rel) },
+                        label = { Text(rel.localizedLabel()) }
+                    )
+                }
             }
         }
     }

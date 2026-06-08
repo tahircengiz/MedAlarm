@@ -247,6 +247,23 @@ private fun ScheduleCard(schedule: Schedule) {
                 schedule.times.joinToString(" · ") { it.format(TIME_FMT) },
                 style = MaterialTheme.typography.titleMedium
             )
+            if (schedule.type == com.medalarm.app.domain.model.ScheduleType.WEEKLY_DAYS &&
+                schedule.daysOfWeek.isNotEmpty()
+            ) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    schedule.daysOfWeek
+                        .sortedBy { it.value }
+                        .joinToString(", ") {
+                            it.getDisplayName(
+                                java.time.format.TextStyle.SHORT,
+                                java.util.Locale.getDefault()
+                            )
+                        },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             if (schedule.mealRelation != MealRelation.NONE) {
                 Spacer(Modifier.height(4.dp))
                 Text(

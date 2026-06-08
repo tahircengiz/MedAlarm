@@ -1,8 +1,13 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.compose.foundation.ExperimentalFoundationApi::class
+)
 
 package com.medalarm.app.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +35,7 @@ import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,13 +47,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -77,6 +86,7 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    var actionDose by remember { mutableStateOf<DoseLog?>(null) }
 
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(lifecycleOwner) {
@@ -128,9 +138,27 @@ fun HomeScreen(
                 DoseList(
                     medications = state.medications,
                     doses = state.doses,
+                    onDoseClick = { actionDose = it },
                     onOpenMedication = onOpenMedication
                 )
             }
+        }
+    }
+
+    // Manual action sheet — tap a dose to mark it without waiting for the notification.
+    actionDose?.let { dose ->
+        val med = state.medications.firstOrNull { it.id == dose.medicationId }
+        if (med != null) {
+            DoseActionDialog(
+                dose = dose,
+                medication = med,
+                onDismiss = { actionDose = null },
+                onTaken = { viewModel.markTaken(dose.id); actionDose = null },
+                onSkip = { viewModel.skip(dose.id); actionDose = null },
+                onSnooze = { viewModel.snooze(dose.id); actionDose = null },
+                onUndo = { viewModel.revert(dose.id); actionDose = null },
+                onOpenMedication = { actionDose = null; onOpenMedication(med.id) }
+            )
         }
     }
 }
@@ -205,6 +233,7 @@ private fun EmptyState(onAdd: () -> Unit) {
 private fun DoseList(
     medications: List<Medication>,
     doses: List<DoseLog>,
+    onDoseClick: (DoseLog) -> Unit,
     onOpenMedication: (Long) -> Unit
 ) {
     val byId = remember(medications) { medications.associateBy { it.id } }
@@ -226,7 +255,12 @@ private fun DoseList(
             items(doses, key = { it.id }) { dose ->
                 val med = byId[dose.medicationId]
                 if (med != null) {
-                    DoseCard(dose = dose, medication = med, onClick = { onOpenMedication(med.id) })
+                    DoseCard(
+                        dose = dose,
+                        medication = med,
+                        onClick = { onDoseClick(dose) },
+                        onLongClick = { onOpenMedication(med.id) }
+                    )
                 }
             }
         }
@@ -234,11 +268,18 @@ private fun DoseList(
 }
 
 @Composable
-private fun DoseCard(dose: DoseLog, medication: Medication, onClick: () -> Unit) {
+private fun DoseCard(
+    dose: DoseLog,
+    medication: Medication,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
     val accent = resolveMedicationColor(medication.colorHex)
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        onClick = onClick,
+        // tap = action dialog, long-press = open medication detail.
+        modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick),
         colors = CardDefaults.cardColors(
             containerColor = when (dose.status) {
                 DoseStatus.TAKEN -> MaterialTheme.colorScheme.primaryContainer
@@ -294,6 +335,45 @@ private fun StatusBadge(status: DoseStatus) {
     @Suppress("UNUSED_VARIABLE")
     val _label = label  // kept for future text-mode rendering
     Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(24.dp))
+}
+
+@Composable
+private fun DoseActionDialog(
+    dose: DoseLog,
+    medication: Medication,
+    onDismiss: () -> Unit,
+    onTaken: () -> Unit,
+    onSkip: () -> Unit,
+    onSnooze: () -> Unit,
+    onUndo: () -> Unit,
+    onOpenMedication: () -> Unit
+) {
+    val actionable = dose.status == DoseStatus.PENDING || dose.status == DoseStatus.SNOOZED
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(medication.name) },
+        text = {
+            Text("${formatTime(dose)} · ${formatDose(medication)}")
+        },
+        confirmButton = {
+            if (actionable) {
+                Column {
+                    TextButton(onClick = onTaken) { Text(stringResource(R.string.action_taken)) }
+                    TextButton(onClick = onSnooze) { Text(stringResource(R.string.action_snooze)) }
+                    TextButton(onClick = onSkip) { Text(stringResource(R.string.action_skip)) }
+                    TextButton(onClick = onOpenMedication) { Text(stringResource(R.string.dose_action_open_med)) }
+                }
+            } else {
+                Column {
+                    TextButton(onClick = onUndo) { Text(stringResource(R.string.dose_action_undo)) }
+                    TextButton(onClick = onOpenMedication) { Text(stringResource(R.string.dose_action_open_med)) }
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) }
+        }
+    )
 }
 
 @Composable

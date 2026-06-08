@@ -56,6 +56,10 @@ internal class DoseLogRepositoryImpl(
         dao.snooze(id, until.toEpochMilli(), at.toEpochMilli())
     }
 
+    override suspend fun revertToPending(id: Long) {
+        dao.revertToPending(id)
+    }
+
     override suspend fun markOverdueAsMissed(threshold: Instant): Int =
         dao.markOverdueAsMissed(threshold.toEpochMilli())
 

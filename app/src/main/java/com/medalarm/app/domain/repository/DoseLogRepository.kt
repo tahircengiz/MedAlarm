@@ -26,6 +26,9 @@ interface DoseLogRepository {
     suspend fun markSkipped(id: Long, at: Instant)
     suspend fun snooze(id: Long, until: Instant, at: Instant)
 
+    /** Reverts a dose back to PENDING (undo). Caller restores stock if it was TAKEN. */
+    suspend fun revertToPending(id: Long)
+
     /** Bulk-flips PENDING doses older than [threshold] to MISSED. Returns count flipped. */
     suspend fun markOverdueAsMissed(threshold: Instant): Int
 

@@ -18,24 +18,39 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 
 /**
- * Form state for the Add Medication screen. Kept as a flat data class so the
- * Composable can read and mutate fields without ceremony; validation is computed
- * derived state, not stored separately.
+ * One editable schedule block. A medication can have several (e.g. weekday 08:00
+ * + weekend 10:00). The UI offers DAILY_TIMES and WEEKLY_DAYS; INTERVAL_HOURS is
+ * supported by the domain but not yet exposed here.
  */
+data class ScheduleDraft(
+    val id: Long = 0,
+    val type: ScheduleType = ScheduleType.DAILY_TIMES,
+    val times: List<LocalTime> = listOf(LocalTime.of(8, 0)),
+    val daysOfWeek: Set<DayOfWeek> = DayOfWeek.values().toSet(),
+    val mealRelation: MealRelation = MealRelation.NONE
+) {
+    val isValid: Boolean
+        get() = when (type) {
+            ScheduleType.DAILY_TIMES -> times.isNotEmpty()
+            ScheduleType.WEEKLY_DAYS -> times.isNotEmpty() && daysOfWeek.isNotEmpty()
+            ScheduleType.INTERVAL_HOURS -> false // not offered in the form
+        }
+}
+
 data class MedicationFormState(
     val editingId: Long? = null,
     val name: String = "",
     val unit: MedicationUnit = MedicationUnit.TABLET,
     val dosageRaw: String = "1",
     val colorHex: String? = null,
-    val times: List<LocalTime> = listOf(LocalTime.of(8, 0)),
-    val mealRelation: MealRelation = MealRelation.NONE,
+    val schedules: List<ScheduleDraft> = listOf(ScheduleDraft()),
     val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate? = null,
     val trackStock: Boolean = false,
@@ -48,10 +63,10 @@ data class MedicationFormState(
 ) {
     val nameError: Boolean get() = name.isBlank()
     val dosageError: Boolean get() = dosageRaw.toFloatOrNull()?.let { it <= 0f } ?: true
-    val timesError: Boolean get() = times.isEmpty()
+    val schedulesError: Boolean get() = schedules.isEmpty() || schedules.any { !it.isValid }
 
     val canSave: Boolean
-        get() = !nameError && !dosageError && !timesError && !isSaving
+        get() = !nameError && !dosageError && !schedulesError && !isSaving
 }
 
 @HiltViewModel
@@ -65,7 +80,6 @@ class MedicationFormViewModel @Inject constructor(
     private val _state = MutableStateFlow(MedicationFormState(isLoading = true))
     val state: StateFlow<MedicationFormState> = _state.asStateFlow()
 
-    /** Edit mode if navigated to /medication/edit/{medicationId}; null otherwise. */
     private val editingId: Long? =
         savedStateHandle.get<String>(Routes.MEDICATION_ID_KEY)?.toLongOrNull()
 
@@ -83,11 +97,13 @@ class MedicationFormViewModel @Inject constructor(
                 }
             } else {
                 val med = medicationRepository.get(editingId)
-                val schedule = medicationRepository.getSchedules(editingId).firstOrNull()
                 if (med == null) {
                     _state.update { it.copy(isLoading = false, saveError = "Medication not found") }
                     return@launch
                 }
+                val drafts = medicationRepository.getSchedules(editingId)
+                    .map { it.toDraft() }
+                    .ifEmpty { listOf(ScheduleDraft()) }
                 _state.update {
                     MedicationFormState(
                         editingId = editingId,
@@ -95,8 +111,7 @@ class MedicationFormViewModel @Inject constructor(
                         unit = med.unit,
                         dosageRaw = med.dosageAmount.toCleanString(),
                         colorHex = med.colorHex,
-                        times = schedule?.times ?: listOf(LocalTime.of(8, 0)),
-                        mealRelation = schedule?.mealRelation ?: MealRelation.NONE,
+                        schedules = drafts,
                         startDate = med.startDate,
                         endDate = med.endDate,
                         trackStock = med.stockAmount != null,
@@ -111,17 +126,35 @@ class MedicationFormViewModel @Inject constructor(
         }
     }
 
-    fun update(transform: (MedicationFormState) -> MedicationFormState) {
-        _state.update(transform)
+    fun update(transform: (MedicationFormState) -> MedicationFormState) = _state.update(transform)
+
+    // --- Schedule block operations ---
+
+    fun addScheduleDraft() = update { s -> s.copy(schedules = s.schedules + ScheduleDraft()) }
+
+    fun removeScheduleDraft(index: Int) = update { s ->
+        if (s.schedules.size <= 1) s // keep at least one
+        else s.copy(schedules = s.schedules.filterIndexed { i, _ -> i != index })
     }
 
-    fun addTime(time: LocalTime) = update { s ->
-        if (s.times.any { it == time }) s
-        else s.copy(times = (s.times + time).sorted())
+    fun setScheduleType(index: Int, type: ScheduleType) = updateDraft(index) { it.copy(type = type) }
+
+    fun setScheduleMeal(index: Int, rel: MealRelation) = updateDraft(index) { it.copy(mealRelation = rel) }
+
+    fun addTime(index: Int, time: LocalTime) = updateDraft(index) { d ->
+        if (d.times.any { it == time }) d else d.copy(times = (d.times + time).sorted())
     }
 
-    fun removeTime(time: LocalTime) = update { s ->
-        s.copy(times = s.times.filterNot { it == time })
+    fun removeTime(index: Int, time: LocalTime) = updateDraft(index) { d ->
+        d.copy(times = d.times.filterNot { it == time })
+    }
+
+    fun toggleDay(index: Int, day: DayOfWeek) = updateDraft(index) { d ->
+        d.copy(daysOfWeek = if (day in d.daysOfWeek) d.daysOfWeek - day else d.daysOfWeek + day)
+    }
+
+    private fun updateDraft(index: Int, transform: (ScheduleDraft) -> ScheduleDraft) = update { s ->
+        s.copy(schedules = s.schedules.mapIndexed { i, d -> if (i == index) transform(d) else d })
     }
 
     fun save(onSaved: () -> Unit) {
@@ -134,44 +167,47 @@ class MedicationFormViewModel @Inject constructor(
                 val now = Instant.now()
                 if (editingId == null) {
                     val medication = current.toNewMedication(now)
-                    val schedule = current.toSchedule(medicationId = 0)
-                    val medId = medicationRepository.add(medication, listOf(schedule))
+                    val schedules = current.schedules.map { it.toSchedule(medicationId = 0) }
+                    val medId = medicationRepository.add(medication, schedules)
                     generateUpcomingDosesUseCase(medId)
                 } else {
                     val existing = medicationRepository.get(editingId) ?: error("Medication missing")
-                    val updated = existing.copy(
-                        name = current.name.trim(),
-                        unit = current.unit,
-                        dosageAmount = current.dosageRaw.toFloat(),
-                        colorHex = current.colorHex,
-                        notes = current.notes.takeIf { it.isNotBlank() },
-                        startDate = current.startDate,
-                        endDate = current.endDate,
-                        stockAmount = if (current.trackStock) current.stockAmountRaw.toFloatOrNull() else null,
-                        stockThreshold = if (current.trackStock) current.stockThresholdRaw.toFloatOrNull() else null,
-                        updatedAt = now
+                    medicationRepository.update(
+                        existing.copy(
+                            name = current.name.trim(),
+                            unit = current.unit,
+                            dosageAmount = current.dosageRaw.toFloat(),
+                            colorHex = current.colorHex,
+                            notes = current.notes.takeIf { it.isNotBlank() },
+                            startDate = current.startDate,
+                            endDate = current.endDate,
+                            stockAmount = if (current.trackStock) current.stockAmountRaw.toFloatOrNull() else null,
+                            stockThreshold = if (current.trackStock) current.stockThresholdRaw.toFloatOrNull() else null,
+                            updatedAt = now
+                        )
                     )
-                    medicationRepository.update(updated)
+                    syncSchedules(editingId, current.schedules)
 
-                    val existingSchedule = medicationRepository.getSchedules(editingId).firstOrNull()
-                    val rewritten = current.toSchedule(medicationId = editingId)
-                        .copy(id = existingSchedule?.id ?: 0)
-                    if (existingSchedule == null) {
-                        medicationRepository.addSchedule(rewritten)
-                    } else {
-                        medicationRepository.updateSchedule(rewritten)
-                    }
-
-                    // Regenerate the 14-day window from the updated schedule rules.
-                    // resetFuture=true clears stale future PENDING (old times) and
-                    // cancels their alarms, so an edited time doesn't leave the old
-                    // one behind. Past/acted doses are untouched (history preserved).
+                    // Rebuild the 14-day window from the new rule set; resetFuture clears
+                    // stale future PENDING (removed/edited blocks) and cancels their alarms.
                     generateUpcomingDosesUseCase(editingId, resetFuture = true)
                 }
                 onSaved()
             } catch (t: Throwable) {
                 _state.update { it.copy(isSaving = false, saveError = t.message) }
             }
+        }
+    }
+
+    /** Diffs the draft list against the stored schedules: delete removed, update kept, insert new. */
+    private suspend fun syncSchedules(medicationId: Long, drafts: List<ScheduleDraft>) {
+        val existing = medicationRepository.getSchedules(medicationId)
+        val keptIds = drafts.mapNotNull { it.id.takeIf { id -> id > 0 } }.toSet()
+        existing.filter { it.id !in keptIds }.forEach { medicationRepository.deleteSchedule(it.id) }
+        drafts.forEach { draft ->
+            val schedule = draft.toSchedule(medicationId)
+            if (draft.id > 0) medicationRepository.updateSchedule(schedule)
+            else medicationRepository.addSchedule(schedule)
         }
     }
 
@@ -189,10 +225,20 @@ class MedicationFormViewModel @Inject constructor(
         updatedAt = now
     )
 
-    private fun MedicationFormState.toSchedule(medicationId: Long) = Schedule(
+    private fun ScheduleDraft.toSchedule(medicationId: Long) = Schedule(
+        id = id,
         medicationId = medicationId,
-        type = ScheduleType.DAILY_TIMES,
+        type = type,
         times = times,
+        daysOfWeek = if (type == ScheduleType.WEEKLY_DAYS) daysOfWeek else emptySet(),
+        mealRelation = mealRelation
+    )
+
+    private fun Schedule.toDraft() = ScheduleDraft(
+        id = id,
+        type = type,
+        times = times.ifEmpty { listOf(LocalTime.of(8, 0)) },
+        daysOfWeek = daysOfWeek.ifEmpty { DayOfWeek.values().toSet() },
         mealRelation = mealRelation
     )
 }

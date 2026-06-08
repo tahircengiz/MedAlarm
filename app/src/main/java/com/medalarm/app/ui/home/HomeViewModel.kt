@@ -7,6 +7,12 @@ import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
+import com.medalarm.app.domain.usecase.AlarmRegistrar
+import com.medalarm.app.domain.usecase.MarkDoseTakenUseCase
+import com.medalarm.app.domain.usecase.RevertDoseUseCase
+import com.medalarm.app.domain.usecase.SkipDoseUseCase
+import com.medalarm.app.domain.usecase.SnoozeDoseUseCase
+import com.medalarm.app.notification.NotificationHelper
 import com.medalarm.app.permission.OemAutostartHelper
 import com.medalarm.app.permission.SystemHealthChecker
 import com.medalarm.app.permission.SystemHealthReport
@@ -39,7 +45,13 @@ class HomeViewModel @Inject constructor(
     private val doseLogRepository: DoseLogRepository,
     private val settingsRepository: SettingsRepository,
     private val systemHealthChecker: SystemHealthChecker,
-    private val oemAutostartHelper: OemAutostartHelper
+    private val oemAutostartHelper: OemAutostartHelper,
+    private val markDoseTakenUseCase: MarkDoseTakenUseCase,
+    private val skipDoseUseCase: SkipDoseUseCase,
+    private val snoozeDoseUseCase: SnoozeDoseUseCase,
+    private val revertDoseUseCase: RevertDoseUseCase,
+    private val alarmRegistrar: AlarmRegistrar,
+    private val notificationHelper: NotificationHelper
 ) : ViewModel() {
 
     private val _healthReport = MutableStateFlow<SystemHealthReport?>(null)
@@ -85,5 +97,34 @@ class HomeViewModel @Inject constructor(
             )
             _healthReport.update { report }
         }
+    }
+
+    // --- Manual dose actions (from the Home dose dialog) ---
+    // These mirror the notification action handlers so manual marking and
+    // notification marking behave identically.
+
+    fun markTaken(doseLogId: Long) = viewModelScope.launch {
+        alarmRegistrar.cancelAutoSnoozeCheck(doseLogId)
+        notificationHelper.cancel(doseLogId)
+        val result = markDoseTakenUseCase(doseLogId)
+        if (result.crossedThreshold && result.medication != null) {
+            notificationHelper.postLowStock(result.medication)
+        }
+    }
+
+    fun skip(doseLogId: Long) = viewModelScope.launch {
+        alarmRegistrar.cancelAutoSnoozeCheck(doseLogId)
+        notificationHelper.cancel(doseLogId)
+        skipDoseUseCase(doseLogId)
+    }
+
+    fun snooze(doseLogId: Long) = viewModelScope.launch {
+        alarmRegistrar.cancelAutoSnoozeCheck(doseLogId)
+        notificationHelper.cancel(doseLogId)
+        snoozeDoseUseCase(doseLogId)
+    }
+
+    fun revert(doseLogId: Long) = viewModelScope.launch {
+        revertDoseUseCase(doseLogId)
     }
 }

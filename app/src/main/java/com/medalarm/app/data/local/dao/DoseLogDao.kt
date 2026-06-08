@@ -76,6 +76,14 @@ interface DoseLogDao {
     @Query("UPDATE dose_logs SET status = :status, actionAt = :actionAt WHERE id = :id")
     suspend fun updateStatus(id: Long, status: DoseStatus, actionAt: Long?)
 
+    /** Reverts a dose to a clean PENDING state (undo a Taken/Skip/Missed). */
+    @Query("""
+        UPDATE dose_logs
+        SET status = 'PENDING', actionAt = NULL, snoozeUntil = NULL, snoozeCount = 0
+        WHERE id = :id
+    """)
+    suspend fun revertToPending(id: Long)
+
     @Query("""
         UPDATE dose_logs
         SET status = 'SNOOZED',

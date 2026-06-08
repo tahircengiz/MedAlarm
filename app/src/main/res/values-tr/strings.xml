@@ -66,6 +66,8 @@
     <string name="action_taken">Aldım</string>
     <string name="action_snooze">Ertele</string>
     <string name="action_skip">Atla</string>
+    <string name="dose_action_undo">Geri al</string>
+    <string name="dose_action_open_med">İlacı aç</string>
 
     <string name="channel_medication_alarm_name">İlaç hatırlatmaları</string>
     <string name="channel_medication_alarm_description">İlaç alma zamanı için yüksek öncelikli hatırlatmalar.</string>
@@ -149,6 +151,13 @@
 
     <string name="add_med_save_error">İlaç kaydedilemedi</string>
     <string name="add_med_at_least_one_time">En az bir saat ekle</string>
+    <string name="add_med_schedule_n">Program %1$d</string>
+    <string name="add_med_add_schedule">Program ekle</string>
+    <string name="add_med_remove_schedule">Programı kaldır</string>
+    <string name="add_med_schedule_daily">Her gün</string>
+    <string name="add_med_schedule_weekly">Haftanın günleri</string>
+    <string name="add_med_days">Günler</string>
+    <string name="add_med_at_least_one_day">En az bir gün seç</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Ayarlar</string>

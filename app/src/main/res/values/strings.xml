@@ -87,6 +87,8 @@
     <string name="action_taken">Taken</string>
     <string name="action_snooze">Snooze</string>
     <string name="action_skip">Skip</string>
+    <string name="dose_action_undo">Undo</string>
+    <string name="dose_action_open_med">Open medication</string>
 
     <!-- Notification channels -->
     <string name="channel_medication_alarm_name">Medication reminders</string>
@@ -175,6 +177,13 @@
 
     <string name="add_med_save_error">Could not save medication</string>
     <string name="add_med_at_least_one_time">Add at least one time</string>
+    <string name="add_med_schedule_n">Schedule %1$d</string>
+    <string name="add_med_add_schedule">Add schedule</string>
+    <string name="add_med_remove_schedule">Remove schedule</string>
+    <string name="add_med_schedule_daily">Every day</string>
+    <string name="add_med_schedule_weekly">Days of week</string>
+    <string name="add_med_days">Days</string>
+    <string name="add_med_at_least_one_day">Select at least one day</string>
 
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
