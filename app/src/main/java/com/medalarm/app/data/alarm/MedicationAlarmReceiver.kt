@@ -8,6 +8,7 @@ import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
 import com.medalarm.app.domain.usecase.ScheduleNextDoseUseCase
 import com.medalarm.app.notification.NotificationHelper
+import com.medalarm.app.tts.TtsHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
     @Inject lateinit var settingsRepository: SettingsRepository
     @Inject lateinit var notificationHelper: NotificationHelper
     @Inject lateinit var scheduleNextDoseUseCase: ScheduleNextDoseUseCase
+    @Inject lateinit var ttsHelper: TtsHelper
 
     override fun onReceive(context: Context, intent: Intent) {
         val doseLogId = intent.getLongExtra(AlarmIntents.EXTRA_DOSE_LOG_ID, -1L)
@@ -62,6 +64,16 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
                     medicationId = log.medicationId,
                     scheduleId = log.scheduleId
                 )
+
+                // Speak the medication name if the user has TTS enabled. Errors
+                // here are swallowed by TtsHelper — they should never block the
+                // notification from being shown.
+                if (settings.ttsEnabled) {
+                    ttsHelper.speak(
+                        text = medication.name,
+                        utteranceId = "dose-${log.id}"
+                    )
+                }
             } catch (t: Throwable) {
                 Timber.e(t, "Failed to handle medication alarm doseLogId=$doseLogId")
             } finally {

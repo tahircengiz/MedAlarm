@@ -1,17 +1,11 @@
 package com.medalarm.app.ui.navigation
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.medalarm.app.ui.history.HistoryScreen
 import com.medalarm.app.ui.home.HomeScreen
 import com.medalarm.app.ui.medication.AddMedicationScreen
 import com.medalarm.app.ui.onboarding.OnboardingScreen
@@ -65,21 +59,9 @@ fun MedAlarmNavHost(
             SystemStatusScreen(onBack = { navController.popBackStack() })
         }
 
-        // Stub for History — lands in the next UI commit.
-        composable(Routes.HISTORY) { PlaceholderScreen("History") }
-    }
-}
-
-@Composable
-private fun PlaceholderScreen(name: String) {
-    Scaffold { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("$name — coming soon")
+        composable(Routes.HISTORY) {
+            HistoryScreen(onBack = { navController.popBackStack() })
         }
     }
 }
+

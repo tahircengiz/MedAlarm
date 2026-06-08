@@ -170,4 +170,18 @@
 
     <string name="settings_about_version">Version</string>
     <string name="settings_about_source">Source code on GitHub</string>
+
+    <!-- History -->
+    <string name="history_title">History</string>
+    <string name="history_range_7_days">Last 7 days</string>
+    <string name="history_range_30_days">Last 30 days</string>
+    <string name="history_range_90_days">Last 90 days</string>
+    <string name="history_empty">No dose history in this range.</string>
+    <!-- %1$d = taken, %2$d = total planned -->
+    <string name="history_adherence">Adherence: %1$d / %2$d</string>
+    <string name="history_status_taken">Taken</string>
+    <string name="history_status_skipped">Skipped</string>
+    <string name="history_status_missed">Missed</string>
+    <string name="history_status_snoozed">Snoozed</string>
+    <string name="history_status_pending">Pending</string>
 </resources>

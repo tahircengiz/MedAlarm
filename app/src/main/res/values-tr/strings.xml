@@ -160,4 +160,17 @@
 
     <string name="settings_about_version">Sürüm</string>
     <string name="settings_about_source">GitHub kaynak kodu</string>
+
+    <!-- History -->
+    <string name="history_title">Geçmiş</string>
+    <string name="history_range_7_days">Son 7 gün</string>
+    <string name="history_range_30_days">Son 30 gün</string>
+    <string name="history_range_90_days">Son 90 gün</string>
+    <string name="history_empty">Bu aralıkta doz kaydı yok.</string>
+    <string name="history_adherence">Uyum: %1$d / %2$d</string>
+    <string name="history_status_taken">Alındı</string>
+    <string name="history_status_skipped">Atlandı</string>
+    <string name="history_status_missed">Kaçırıldı</string>
+    <string name="history_status_snoozed">Ertelendi</string>
+    <string name="history_status_pending">Bekliyor</string>
 </resources>
