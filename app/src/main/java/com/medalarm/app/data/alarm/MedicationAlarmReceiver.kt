@@ -6,10 +6,12 @@ import android.content.Intent
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
+import com.medalarm.app.domain.usecase.AlarmRegistrar
 import com.medalarm.app.domain.usecase.GenerateUpcomingDosesUseCase
 import com.medalarm.app.notification.NotificationHelper
 import com.medalarm.app.tts.TtsHelper
 import dagger.hilt.android.AndroidEntryPoint
+import java.time.temporal.ChronoUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,6 +34,7 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
     @Inject lateinit var notificationHelper: NotificationHelper
     @Inject lateinit var generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase
     @Inject lateinit var ttsHelper: TtsHelper
+    @Inject lateinit var alarmRegistrar: AlarmRegistrar
 
     override fun onReceive(context: Context, intent: Intent) {
         val doseLogId = intent.getLongExtra(AlarmIntents.EXTRA_DOSE_LOG_ID, -1L)
@@ -56,6 +59,17 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
                     medication = medication,
                     snoozeButtonEnabled = snoozeEnabled
                 )
+
+                // Auto-snooze safety net: if the user doesn't act within the fixed
+                // timeout, AutoSnoozeReceiver treats it as a snooze. Only arm it
+                // while snooze is still allowed (cap not yet reached).
+                if (snoozeEnabled) {
+                    alarmRegistrar.scheduleAutoSnoozeCheck(
+                        doseLogId = log.id,
+                        fireAt = java.time.Instant.now()
+                            .plus(AlarmIntents.AUTO_SNOOZE_TIMEOUT_MINUTES, ChronoUnit.MINUTES)
+                    )
+                }
 
                 // Top up the 14-day PENDING window — also registers the alarm for
                 // the soonest remaining PENDING in any schedule of this medication.

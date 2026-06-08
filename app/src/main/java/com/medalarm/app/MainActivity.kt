@@ -13,6 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.medalarm.app.data.alarm.ReliabilityWorker
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.ui.main.MainViewModel
 import com.medalarm.app.ui.navigation.MedAlarmNavHost
@@ -28,6 +32,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Immediate re-arm + overdue sweep whenever the user opens the app — the
+        // periodic worker covers the times the app isn't opened.
+        WorkManager.getInstance(this).enqueueUniqueWork(
+            ReliabilityWorker.UNIQUE_ONESHOT_NAME,
+            ExistingWorkPolicy.REPLACE,
+            OneTimeWorkRequestBuilder<ReliabilityWorker>().build()
+        )
+
         enableEdgeToEdge()
         setContent {
             val settings by viewModel.settings.collectAsState()

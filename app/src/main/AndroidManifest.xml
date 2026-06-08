@@ -91,6 +91,12 @@
             tools:ignore="MissingClass" />
 
         <receiver
+            android:name=".data.alarm.AutoSnoozeReceiver"
+            android:enabled="true"
+            android:exported="false"
+            tools:ignore="MissingClass" />
+
+        <receiver
             android:name=".data.alarm.BootCompletedReceiver"
             android:enabled="true"
             android:exported="true"

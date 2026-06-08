@@ -56,6 +56,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.medalarm.app.R
 import com.medalarm.app.permission.CheckStatus
+import com.medalarm.app.permission.Oem
 import com.medalarm.app.permission.OemAutostartHelper
 import com.medalarm.app.permission.SystemHealthReport
 
@@ -167,6 +168,12 @@ fun SystemStatusScreen(
                     }
                 )
             }
+            if (oemHelper.detect() == Oem.SAMSUNG) {
+                item { InfoNote(
+                    title = stringResource(R.string.status_samsung_note_title),
+                    body = stringResource(R.string.status_samsung_note_body)
+                ) }
+            }
             if (viewModel.isOemAggressive) {
                 item {
                     StatusCard(
@@ -183,6 +190,39 @@ fun SystemStatusScreen(
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun InfoNote(title: String, body: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+    ) {
+        Row(modifier = Modifier.padding(16.dp)) {
+            Icon(
+                Icons.Outlined.Info,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(Modifier.width(12.dp))
+            Column {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    body,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                )
             }
         }
     }

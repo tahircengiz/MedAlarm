@@ -25,9 +25,34 @@ class AndroidAlarmRegistrar @Inject constructor(
     private val alarmManager: AlarmManager? = context.getSystemService()
 
     override fun scheduleExact(doseLogId: Long, fireAt: Instant) {
-        val am = alarmManager ?: return
-        val pi = pendingIntent(doseLogId, replace = true)
+        val pi = pendingIntent(AlarmIntents.alarmFireIntent(context, doseLogId), doseLogId, replace = true)
+        setExact(pi, fireAt)
+        Timber.d("Scheduled doseLogId=$doseLogId at $fireAt")
+    }
 
+    override fun cancel(doseLogId: Long) {
+        val am = alarmManager ?: return
+        val pi = pendingIntent(AlarmIntents.alarmFireIntent(context, doseLogId), doseLogId, replace = false)
+        am.cancel(pi)
+        pi.cancel()
+    }
+
+    override fun scheduleAutoSnoozeCheck(doseLogId: Long, fireAt: Instant) {
+        val pi = pendingIntent(AlarmIntents.autoSnoozeIntent(context, doseLogId), doseLogId, replace = true)
+        setExact(pi, fireAt)
+        Timber.d("Scheduled auto-snooze check doseLogId=$doseLogId at $fireAt")
+    }
+
+    override fun cancelAutoSnoozeCheck(doseLogId: Long) {
+        val am = alarmManager ?: return
+        val pi = pendingIntent(AlarmIntents.autoSnoozeIntent(context, doseLogId), doseLogId, replace = false)
+        am.cancel(pi)
+        pi.cancel()
+    }
+
+    /** Shared exact-alarm scheduling with the Doze-friendly flavor + permission fallback. */
+    private fun setExact(pi: PendingIntent, fireAt: Instant) {
+        val am = alarmManager ?: return
         // On Android 12+ canScheduleExactAlarms must be true; we declare USE_EXACT_ALARM
         // (alarm-clock-class app), so it should be granted by default, but check defensively.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !am.canScheduleExactAlarms()) {
@@ -35,20 +60,15 @@ class AndroidAlarmRegistrar @Inject constructor(
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt.toEpochMilli(), pi)
             return
         }
-
         am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, fireAt.toEpochMilli(), pi)
-        Timber.d("Scheduled doseLogId=$doseLogId at $fireAt")
     }
 
-    override fun cancel(doseLogId: Long) {
-        val am = alarmManager ?: return
-        val pi = pendingIntent(doseLogId, replace = false) ?: return
-        am.cancel(pi)
-        pi.cancel()
-    }
-
-    private fun pendingIntent(doseLogId: Long, replace: Boolean): PendingIntent {
-        val intent = AlarmIntents.alarmFireIntent(context, doseLogId)
+    /**
+     * Builds the PendingIntent for [intent]. The auto-snooze and main-fire intents
+     * target different receivers, so sharing [requestCodeFor] is safe — PendingIntent
+     * identity also keys on the target component.
+     */
+    private fun pendingIntent(intent: android.content.Intent, doseLogId: Long, replace: Boolean): PendingIntent {
         val flags = PendingIntent.FLAG_IMMUTABLE or
             if (replace) PendingIntent.FLAG_UPDATE_CURRENT else 0
         return PendingIntent.getBroadcast(

@@ -3,8 +3,21 @@ name: Build & Manifesto Guard
 on:
   push:
     branches: [main]
+    # Don't burn a build on documentation-only changes.
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
   pull_request:
     branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - "LICENSE"
+      - ".gitignore"
+      - ".gitattributes"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

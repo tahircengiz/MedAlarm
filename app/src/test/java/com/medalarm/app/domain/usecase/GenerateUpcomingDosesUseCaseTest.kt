@@ -113,8 +113,12 @@ class GenerateUpcomingDosesUseCaseTest {
 private class FakeAlarmRegistrar : AlarmRegistrar {
     val scheduled = mutableListOf<Pair<Long, Instant>>()
     val cancelled = mutableListOf<Long>()
+    val autoSnoozeScheduled = mutableListOf<Pair<Long, Instant>>()
+    val autoSnoozeCancelled = mutableListOf<Long>()
     override fun scheduleExact(doseLogId: Long, fireAt: Instant) { scheduled += doseLogId to fireAt }
     override fun cancel(doseLogId: Long) { cancelled += doseLogId }
+    override fun scheduleAutoSnoozeCheck(doseLogId: Long, fireAt: Instant) { autoSnoozeScheduled += doseLogId to fireAt }
+    override fun cancelAutoSnoozeCheck(doseLogId: Long) { autoSnoozeCancelled += doseLogId }
 }
 
 private class FakeMedicationRepository(

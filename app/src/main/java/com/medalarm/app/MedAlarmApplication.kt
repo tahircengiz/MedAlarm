@@ -6,10 +6,15 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.medalarm.app.data.alarm.ReliabilityWorker
 import com.medalarm.app.domain.model.AppLanguage
 import com.medalarm.app.domain.repository.SettingsRepository
 import com.medalarm.app.notification.NotificationChannels
 import dagger.hilt.android.HiltAndroidApp
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -50,6 +55,25 @@ class MedAlarmApplication : Application(), Configuration.Provider {
             .distinctUntilChanged()
             .onEach { applyLanguage(it) }
             .launchIn(appScope)
+
+        scheduleReliabilityWorker()
+    }
+
+    /**
+     * Periodic safety net (every 6h) that re-arms dropped alarms and sweeps overdue
+     * doses to MISSED. KEEP policy so re-launches don't reset the schedule. Runs on
+     * every process start (including when a receiver wakes us), which is a good
+     * moment to re-validate.
+     */
+    private fun scheduleReliabilityWorker() {
+        val request = PeriodicWorkRequestBuilder<ReliabilityWorker>(
+            ReliabilityWorker.PERIOD_HOURS, TimeUnit.HOURS
+        ).build()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+            ReliabilityWorker.UNIQUE_PERIODIC_NAME,
+            ExistingPeriodicWorkPolicy.KEEP,
+            request
+        )
     }
 
     private suspend fun applyLanguage(language: AppLanguage) {

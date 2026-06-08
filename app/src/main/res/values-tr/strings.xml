@@ -56,6 +56,8 @@
     <string name="status_fix">Düzelt</string>
     <string name="status_open">Aç</string>
     <string name="status_refresh">Yenile</string>
+    <string name="status_samsung_note_title">Samsung ipucu</string>
+    <string name="status_samsung_note_body">MedAlarm için pil kullanımını \"Kısıtlanmamış\" (Unrestricted) yapman yeterlidir. Bunu yapınca uygulama Samsung\'un \"Never sleeping apps / Hiç uyumayan uygulamalar\" listesinde GÖRÜNMEZ — bu normaldir, çünkü zaten muaftır.</string>
     <string name="status_ok">Tamam</string>
     <string name="status_attention">Dikkat gerekiyor</string>
     <string name="status_blocked">Engelli</string>

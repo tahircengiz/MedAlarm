@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +71,9 @@ fun OnboardingScreen(
 ) {
     val settings by viewModel.settings.collectAsState()
     val healthReport by viewModel.healthReport.collectAsState()
-    var step by remember { mutableIntStateOf(0) }
+    // rememberSaveable so the step survives the Activity recreation that
+    // setApplicationLocales triggers when the user picks a language (step 0).
+    var step by rememberSaveable { mutableIntStateOf(0) }
     val totalSteps = 5
 
     // Refresh health every time the user returns to the foreground (e.g. after
@@ -93,15 +96,18 @@ fun OnboardingScreen(
             Spacer(Modifier.height(24.dp))
 
             Box(modifier = Modifier.weight(1f)) {
+                // Order: language FIRST so the disclaimer + the rest render in the
+                // chosen language. Picking a language recreates the Activity (locale
+                // change); rememberSaveable keeps us on this step instead of resetting.
                 when (step) {
-                    0 -> WelcomeStep()
-                    1 -> DisclaimerStep(
-                        accepted = settings?.disclaimerAccepted == true,
-                        onAcceptChange = { if (it) viewModel.acceptDisclaimer() }
-                    )
-                    2 -> LanguageStep(
+                    0 -> LanguageStep(
                         current = settings?.language ?: AppLanguage.SYSTEM,
                         onSelect = viewModel::setLanguage
+                    )
+                    1 -> WelcomeStep()
+                    2 -> DisclaimerStep(
+                        accepted = settings?.disclaimerAccepted == true,
+                        onAcceptChange = { if (it) viewModel.acceptDisclaimer() }
                     )
                     3 -> ThemeStep(
                         currentTheme = settings?.themeMode ?: ThemeMode.SYSTEM,
@@ -135,7 +141,7 @@ fun OnboardingScreen(
 }
 
 private fun canAdvance(step: Int, disclaimerAccepted: Boolean): Boolean = when (step) {
-    1 -> disclaimerAccepted   // disclaimer must be accepted to leave step 1
+    2 -> disclaimerAccepted   // disclaimer (now step 2) must be accepted to advance
     else -> true
 }
 

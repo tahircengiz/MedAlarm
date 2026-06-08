@@ -76,6 +76,8 @@
     <string name="status_fix">Fix</string>
     <string name="status_open">Open</string>
     <string name="status_refresh">Refresh</string>
+    <string name="status_samsung_note_title">Samsung tip</string>
+    <string name="status_samsung_note_body">Setting battery usage to \"Unrestricted\" for MedAlarm is enough. When you do, the app will NOT appear in Samsung\'s \"Never sleeping apps\" list — that is normal, because it is already exempt.</string>
     <string name="status_ok">OK</string>
     <string name="status_attention">Needs attention</string>
     <string name="status_blocked">Blocked</string>
