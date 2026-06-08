@@ -1,8 +1,11 @@
 [versions]
 # Toolchain
+# Kotlin pinned to 2.0.21 (not 2.1.x) because Hilt 2.52 cannot read the 2.1 metadata
+# version — hiltJavaCompileDebug throws "Unable to read Kotlin metadata".
+# When bumping Kotlin, also bump Hilt to ≥ 2.54 and KSP to a matching release.
 agp = "8.7.3"
-kotlin = "2.1.0"
-ksp = "2.1.0-1.0.29"
+kotlin = "2.0.21"
+ksp = "2.0.21-1.0.27"
 
 # AndroidX core
 coreKtx = "1.15.0"
