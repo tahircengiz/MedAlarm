@@ -44,6 +44,7 @@ import com.medalarm.app.domain.model.UserSettings
 fun SettingsScreen(
     onBack: () -> Unit,
     onOpenSystemStatus: () -> Unit,
+    onOpenBackup: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val settings by viewModel.settings.collectAsState()
@@ -72,7 +73,12 @@ fun SettingsScreen(
             item { HorizontalDivider() }
             item { RemindersSection(s, viewModel) }
             item { HorizontalDivider() }
-            item { SystemSection(onOpenSystemStatus = onOpenSystemStatus) }
+            item {
+                SystemSection(
+                    onOpenSystemStatus = onOpenSystemStatus,
+                    onOpenBackup = onOpenBackup
+                )
+            }
             item { HorizontalDivider() }
             item { AboutSection() }
         }
@@ -191,12 +197,16 @@ private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {
 }
 
 @Composable
-private fun SystemSection(onOpenSystemStatus: () -> Unit) {
+private fun SystemSection(onOpenSystemStatus: () -> Unit, onOpenBackup: () -> Unit) {
     Column {
         SectionHeader(stringResource(R.string.settings_section_system))
         NavigationRow(
             label = stringResource(R.string.settings_open_system_status),
             onClick = onOpenSystemStatus
+        )
+        NavigationRow(
+            label = stringResource(R.string.backup_open_section),
+            onClick = onOpenBackup
         )
     }
 }

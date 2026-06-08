@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.medalarm.app.ui.backup.BackupScreen
 import com.medalarm.app.ui.history.HistoryScreen
 import com.medalarm.app.ui.home.HomeScreen
 import com.medalarm.app.ui.medication.AddMedicationScreen
@@ -51,12 +52,17 @@ fun MedAlarmNavHost(
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onOpenSystemStatus = { navController.navigate(Routes.SETTINGS_SYSTEM_STATUS) }
+                onOpenSystemStatus = { navController.navigate(Routes.SETTINGS_SYSTEM_STATUS) },
+                onOpenBackup = { navController.navigate(Routes.SETTINGS_BACKUP) }
             )
         }
 
         composable(Routes.SETTINGS_SYSTEM_STATUS) {
             SystemStatusScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Routes.SETTINGS_BACKUP) {
+            BackupScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Routes.HISTORY) {

@@ -171,6 +171,21 @@
     <string name="settings_about_version">Version</string>
     <string name="settings_about_source">Source code on GitHub</string>
 
+    <!-- Backup -->
+    <string name="backup_title">Backup &amp; Export</string>
+    <string name="backup_section_json">Data backup (JSON)</string>
+    <string name="backup_export">Export data</string>
+    <string name="backup_import">Import data</string>
+    <string name="backup_import_replace">Replace all existing data</string>
+    <string name="backup_import_merge">Merge with existing data</string>
+    <string name="backup_section_pdf">PDF report</string>
+    <string name="backup_export_pdf">Export PDF report</string>
+    <string name="backup_export_pdf_hint">A printable summary of your last 30 days, useful for sharing with your doctor.</string>
+    <string name="backup_success">Saved successfully.</string>
+    <string name="backup_import_success">Restored. Reopen the app to see changes.</string>
+    <string name="backup_error">Operation failed.</string>
+    <string name="backup_open_section">Backup &amp; Export</string>
+
     <!-- History -->
     <string name="history_title">History</string>
     <string name="history_range_7_days">Last 7 days</string>

@@ -161,6 +161,21 @@
     <string name="settings_about_version">Sürüm</string>
     <string name="settings_about_source">GitHub kaynak kodu</string>
 
+    <!-- Backup -->
+    <string name="backup_title">Yedekleme ve Dışa Aktar</string>
+    <string name="backup_section_json">Veri yedeği (JSON)</string>
+    <string name="backup_export">Veriyi dışa aktar</string>
+    <string name="backup_import">Veriyi içe aktar</string>
+    <string name="backup_import_replace">Mevcut veriyi değiştir</string>
+    <string name="backup_import_merge">Mevcut veriyle birleştir</string>
+    <string name="backup_section_pdf">PDF rapor</string>
+    <string name="backup_export_pdf">PDF rapor oluştur</string>
+    <string name="backup_export_pdf_hint">Son 30 günün yazdırılabilir özeti — doktorunla paylaşmak için uygun.</string>
+    <string name="backup_success">Başarıyla kaydedildi.</string>
+    <string name="backup_import_success">Geri yüklendi. Değişiklikleri görmek için uygulamayı yeniden aç.</string>
+    <string name="backup_error">İşlem başarısız.</string>
+    <string name="backup_open_section">Yedekleme ve Dışa Aktar</string>
+
     <!-- History -->
     <string name="history_title">Geçmiş</string>
     <string name="history_range_7_days">Son 7 gün</string>

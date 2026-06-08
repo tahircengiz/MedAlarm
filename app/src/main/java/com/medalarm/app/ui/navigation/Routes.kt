@@ -9,6 +9,7 @@ object Routes {
     const val HOME = "home"
     const val SETTINGS = "settings"
     const val SETTINGS_SYSTEM_STATUS = "settings/system_status"
+    const val SETTINGS_BACKUP = "settings/backup"
     const val ADD_MEDICATION = "medication/add"
     const val EDIT_MEDICATION = "medication/edit/{medicationId}"
     const val MEDICATION_DETAIL = "medication/{medicationId}"
