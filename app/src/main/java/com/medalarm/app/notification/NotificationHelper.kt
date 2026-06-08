@@ -54,9 +54,10 @@ class NotificationHelper @Inject constructor(
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            // Don't auto-dismiss — the user must explicitly act.
+            // Persistent until the user explicitly acts: don't auto-dismiss and
+            // keep it ongoing (not swipeable) so a missed reminder stays visible.
             .setAutoCancel(false)
-            .setOngoing(!snoozeButtonEnabled) // once snooze limit hit, becomes ongoing
+            .setOngoing(true)
             .addAction(0, context.getString(R.string.action_taken), takenPi)
             .addAction(0, context.getString(R.string.action_skip), skipPi)
 

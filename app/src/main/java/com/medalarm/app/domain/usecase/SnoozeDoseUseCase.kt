@@ -31,7 +31,9 @@ class SnoozeDoseUseCase @Inject constructor(
 
         val until = now.plus(settings.defaultSnoozeMinutes.toLong(), ChronoUnit.MINUTES)
         doseLogRepository.snooze(doseLogId, until = until, at = now)
-        alarmRegistrar.scheduleExact(doseLogId, until)
+        // Re-alert via the auto-snooze path (re-posts the notification when it fires),
+        // not the main dose alarm — keeps manual and automatic snooze on one mechanism.
+        alarmRegistrar.scheduleAutoSnoozeCheck(doseLogId, until)
         return Result(snoozedUntil = until, capReached = false)
     }
 }

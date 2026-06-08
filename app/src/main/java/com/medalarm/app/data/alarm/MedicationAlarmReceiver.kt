@@ -60,14 +60,14 @@ class MedicationAlarmReceiver : BroadcastReceiver() {
                     snoozeButtonEnabled = snoozeEnabled
                 )
 
-                // Auto-snooze safety net: if the user doesn't act within the fixed
-                // timeout, AutoSnoozeReceiver treats it as a snooze. Only arm it
-                // while snooze is still allowed (cap not yet reached).
+                // No-response re-reminder: if the user doesn't act within one snooze
+                // interval, AutoSnoozeReceiver re-alerts (and keeps doing so up to the
+                // cap). Only arm it while snooze is still allowed.
                 if (snoozeEnabled) {
                     alarmRegistrar.scheduleAutoSnoozeCheck(
                         doseLogId = log.id,
                         fireAt = java.time.Instant.now()
-                            .plus(AlarmIntents.AUTO_SNOOZE_TIMEOUT_MINUTES, ChronoUnit.MINUTES)
+                            .plus(settings.defaultSnoozeMinutes.toLong(), ChronoUnit.MINUTES)
                     )
                 }
 

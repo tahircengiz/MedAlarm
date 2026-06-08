@@ -42,16 +42,13 @@ object AlarmIntents {
         }
 
     /**
-     * Fires [AUTO_SNOOZE_TIMEOUT_MINUTES] after a reminder is posted. If the user
-     * hasn't acted by then, [AutoSnoozeReceiver] treats the dose as snoozed.
-     * Targets a different receiver than [alarmFireIntent], so it's a distinct
-     * PendingIntent even though it shares the request-code derivation.
+     * Fires one snooze-interval after a reminder is posted. If the user hasn't
+     * acted by then, [AutoSnoozeReceiver] re-alerts (and reschedules the next
+     * check). Targets a different receiver than [alarmFireIntent], so it's a
+     * distinct PendingIntent even though it shares the request-code derivation.
      */
     fun autoSnoozeIntent(context: Context, doseLogId: Long): Intent =
         Intent(context, AutoSnoozeReceiver::class.java).apply {
             putExtra(EXTRA_DOSE_LOG_ID, doseLogId)
         }
-
-    /** Fixed no-response window before a reminder auto-snoozes. */
-    const val AUTO_SNOOZE_TIMEOUT_MINUTES = 5L
 }
