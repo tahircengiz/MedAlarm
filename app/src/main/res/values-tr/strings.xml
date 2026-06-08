@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MedAlarm</string>
+    <string name="welcome_placeholder">MedAlarm — kurulum sihirbazı yakında</string>
+
+    <string name="onboarding_welcome_title">MedAlarm\'a hoş geldin</string>
+    <string name="onboarding_welcome_body">Ücretsiz, reklamsız ve çevrimdışı çalışan bir ilaç hatırlatma uygulaması. Veriler hiçbir zaman bu telefondan dışarı çıkmaz.</string>
+    <string name="onboarding_continue">Devam et</string>
+    <string name="onboarding_skip">Atla</string>
+
+    <string name="disclaimer_title">Sorumluluk metni</string>
+    <string name="disclaimer_accept">Okudum ve kabul ediyorum</string>
+    <string name="disclaimer_short">MedAlarm bir tıbbi cihaz değildir, tıbbi tavsiye vermez. İlaçlarınızı doğru almak sizin sorumluluğunuzdadır. Android pil yönetimi nedeniyle bildirimler gecikebilir veya gelmeyebilir; hayati öneme sahip ilaçlar için yalnızca bu uygulamaya güvenmeyin.</string>
+    <string name="disclaimer_full_link">Tam metni oku</string>
+
+    <string name="settings_theme">Tema</string>
+    <string name="settings_theme_system">Sistemi takip et</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+    <string name="settings_dynamic_color">Duvar kağıdı renklerini kullan (Android 12+)</string>
+
+    <string name="settings_language">Dil</string>
+    <string name="settings_language_system">Sistem</string>
+    <string name="settings_language_tr">Türkçe</string>
+    <string name="settings_language_en">English</string>
+
+    <string name="settings_system_status">Sistem durumu</string>
+    <string name="status_notifications_permission">Bildirim izni</string>
+    <string name="status_exact_alarm_permission">Tam zamanlı alarm izni</string>
+    <string name="status_battery_optimization">Pil optimizasyonu</string>
+    <string name="status_notifications_enabled">Bildirimler açık</string>
+    <string name="status_oem_autostart">Arka planda çalışma izni</string>
+    <string name="status_fix">Düzelt</string>
+    <string name="status_open">Aç</string>
+    <string name="status_refresh">Yenile</string>
+    <string name="status_ok">Tamam</string>
+    <string name="status_attention">Dikkat gerekiyor</string>
+    <string name="status_blocked">Engelli</string>
+    <string name="status_unknown">Bilinmiyor</string>
+
+    <string name="action_taken">Aldım</string>
+    <string name="action_snooze">Ertele</string>
+    <string name="action_skip">Atla</string>
+
+    <string name="channel_medication_alarm_name">İlaç hatırlatmaları</string>
+    <string name="channel_medication_alarm_description">İlaç alma zamanı için yüksek öncelikli hatırlatmalar.</string>
+    <string name="channel_low_stock_name">Stok uyarıları</string>
+    <string name="channel_low_stock_description">İlacın bitmek üzere olduğunu hatırlatır.</string>
+    <string name="channel_system_health_name">Sistem sağlığı</string>
+    <string name="channel_system_health_description">İzin veya ayarların hatırlatmaları engelleyebileceği durumlarda uyarır.</string>
+
+    <string name="unit_tablet">tablet</string>
+    <string name="unit_capsule">kapsül</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_mg">mg</string>
+    <string name="unit_drop">damla</string>
+    <string name="unit_puff">sprey</string>
+    <string name="unit_sachet">saşe</string>
+    <string name="unit_other">diğer</string>
+
+    <string name="meal_none">İlişkisi yok</string>
+    <string name="meal_before">Yemekten önce</string>
+    <string name="meal_after">Yemekten sonra</string>
+    <string name="meal_with">Yemekle birlikte</string>
+
+    <string name="stock_low_title">Stok azalıyor</string>
+    <string name="stock_low_body">%1$s bitmek üzere — %2$s kaldı.</string>
+</resources>

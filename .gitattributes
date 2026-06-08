@@ -1,0 +1,24 @@
+# Auto-detect text files and normalize line endings.
+* text=auto eol=lf
+
+# Windows batch files need CRLF
+*.bat text eol=crlf
+
+# Binary files
+*.jar binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.apk binary
+*.aab binary
+*.aar binary
+*.so binary
+*.keystore binary
+*.jks binary
+
+# Don't modify wrapper jar
+gradle/wrapper/gradle-wrapper.jar binary

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MedAlarm</string>
+    <string name="welcome_placeholder">MedAlarm — onboarding coming soon</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome to MedAlarm</string>
+    <string name="onboarding_welcome_body">A free, ad-free, offline medication reminder. Your data never leaves this phone.</string>
+    <string name="onboarding_continue">Continue</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <!-- Disclaimer (short form for onboarding; long form is shown on a dedicated screen) -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <string name="disclaimer_accept">I have read and accept</string>
+    <string name="disclaimer_short">MedAlarm is not a medical device and does not provide medical advice. You are responsible for taking your medication correctly. Notifications may be delayed or missed due to Android battery management; do not rely on this app alone for life-critical medication.</string>
+    <string name="disclaimer_full_link">Read full disclaimer</string>
+
+    <!-- Theme / language settings -->
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Use wallpaper colors (Android 12+)</string>
+
+    <string name="settings_language">Language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_tr">Türkçe</string>
+    <string name="settings_language_en">English</string>
+
+    <!-- System status -->
+    <string name="settings_system_status">System status</string>
+    <string name="status_notifications_permission">Notification permission</string>
+    <string name="status_exact_alarm_permission">Exact alarm permission</string>
+    <string name="status_battery_optimization">Battery optimization</string>
+    <string name="status_notifications_enabled">Notifications enabled</string>
+    <string name="status_oem_autostart">Background autostart</string>
+    <string name="status_fix">Fix</string>
+    <string name="status_open">Open</string>
+    <string name="status_refresh">Refresh</string>
+    <string name="status_ok">OK</string>
+    <string name="status_attention">Needs attention</string>
+    <string name="status_blocked">Blocked</string>
+    <string name="status_unknown">Unknown</string>
+
+    <!-- Notification actions -->
+    <string name="action_taken">Taken</string>
+    <string name="action_snooze">Snooze</string>
+    <string name="action_skip">Skip</string>
+
+    <!-- Notification channels -->
+    <string name="channel_medication_alarm_name">Medication reminders</string>
+    <string name="channel_medication_alarm_description">High-priority reminders to take your medication.</string>
+    <string name="channel_low_stock_name">Low stock warnings</string>
+    <string name="channel_low_stock_description">Reminds you when a medication is about to run out.</string>
+    <string name="channel_system_health_name">System health</string>
+    <string name="channel_system_health_description">Warns when permissions or settings could prevent reminders from firing.</string>
+
+    <!-- Units -->
+    <string name="unit_tablet">tablet</string>
+    <string name="unit_capsule">capsule</string>
+    <string name="unit_ml">ml</string>
+    <string name="unit_mg">mg</string>
+    <string name="unit_drop">drop</string>
+    <string name="unit_puff">puff</string>
+    <string name="unit_sachet">sachet</string>
+    <string name="unit_other">other</string>
+
+    <!-- Meal relation -->
+    <string name="meal_none">No relation</string>
+    <string name="meal_before">Before meal</string>
+    <string name="meal_after">After meal</string>
+    <string name="meal_with">With meal</string>
+
+    <!-- Stock -->
+    <string name="stock_low_title">Low stock</string>
+    <!-- %1$s = medication name, %2$s = amount + unit (e.g. "5 tablet") -->
+    <string name="stock_low_body">%1$s is running low — %2$s left.</string>
+</resources>

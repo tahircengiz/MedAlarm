@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Stylized capsule pill icon. White/light foreground on a teal background.
+    Designed for adaptive icon system: 108dp viewport with 72dp safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Capsule body, rotated 45deg -->
+    <group
+        android:pivotX="54"
+        android:pivotY="54"
+        android:rotation="-45">
+        <!-- Right half (white) -->
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M54,32h18a16,16 0 0 1 16,16v12a16,16 0 0 1 -16,16h-18z" />
+        <!-- Left half (slightly translucent for depth) -->
+        <path
+            android:fillColor="#FFE6FBFC"
+            android:pathData="M36,32h18v44h-18a16,16 0 0 1 -16,-16v-12a16,16 0 0 1 16,-16z" />
+        <!-- Divider line -->
+        <path
+            android:fillColor="#FF00696C"
+            android:pathData="M53,32h2v44h-2z" />
+    </group>
+</vector>

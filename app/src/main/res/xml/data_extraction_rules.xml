@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Android 12+ replacement for full-backup-content. Same intent: exclude everything
+    from both cloud backup and device-to-device transfer. Manifest already disables
+    cloud backup; this is the explicit rule set Android 12+ requires.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" path="." />
+        <exclude domain="database" path="." />
+        <exclude domain="sharedpref" path="." />
+        <exclude domain="file" path="." />
+    </cloud-backup>
+    <device-transfer>
+        <!--
+            Device-to-device transfer (e.g. new-phone setup) is allowed: a user moving
+            phones should keep their medications. This is local-to-local, no cloud.
+        -->
+        <include domain="database" path="." />
+        <include domain="sharedpref" path="." />
+        <include domain="file" path="." />
+    </device-transfer>
+</data-extraction-rules>
