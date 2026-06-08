@@ -70,3 +70,7 @@ lint/tmp/
 # Local env
 .env
 .env.local
+
+# Signing keystores (never commit)
+*.p12
+keystore.properties

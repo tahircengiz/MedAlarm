@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +9,32 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+/**
+ * Release signing is driven entirely by environment variables so the keystore
+ * never lives in the repo. CI (release.yml) decodes the base64 keystore secret
+ * to a file and exports these vars:
+ *   SIGNING_KEYSTORE_FILE      absolute path to the decoded .p12
+ *   SIGNING_KEYSTORE_PASSWORD  store password
+ *   SIGNING_KEY_ALIAS          key alias
+ *   SIGNING_KEY_PASSWORD       key password (same as store for our PKCS12)
+ *
+ * Locally, you can instead drop a keystore.properties file at the repo root with
+ * storeFile/storePassword/keyAlias/keyPassword. If neither is present, the
+ * release build falls back to the debug signing identity so `assembleRelease`
+ * still produces an installable APK for quick local checks (NOT for distribution).
+ */
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) load(FileInputStream(keystorePropsFile))
+}
+
+fun signingEnv(name: String): String? =
+    System.getenv(name)?.takeIf { it.isNotBlank() }
+
+val hasReleaseSigning: Boolean =
+    (signingEnv("SIGNING_KEYSTORE_FILE") != null && signingEnv("SIGNING_KEYSTORE_PASSWORD") != null) ||
+        keystoreProps.getProperty("storeFile") != null
 
 android {
     namespace = "com.medalarm.app"
@@ -34,6 +63,27 @@ android {
         }
     }
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                val envFile = signingEnv("SIGNING_KEYSTORE_FILE")
+                if (envFile != null) {
+                    storeFile = file(envFile)
+                    storePassword = signingEnv("SIGNING_KEYSTORE_PASSWORD")
+                    keyAlias = signingEnv("SIGNING_KEY_ALIAS")
+                    keyPassword = signingEnv("SIGNING_KEY_PASSWORD")
+                } else {
+                    storeFile = rootProject.file(keystoreProps.getProperty("storeFile"))
+                    storePassword = keystoreProps.getProperty("storePassword")
+                    keyAlias = keystoreProps.getProperty("keyAlias")
+                    keyPassword = keystoreProps.getProperty("keyPassword")
+                }
+                // PKCS12 keystore produced by openssl.
+                storeType = "PKCS12"
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -51,6 +101,13 @@ android {
             )
             // Disable debugging in release for security.
             isDebuggable = false
+            // Use the release identity when configured; otherwise fall back to debug
+            // signing so a local `assembleRelease` still installs (not for distribution).
+            signingConfig = if (hasReleaseSigning) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 
