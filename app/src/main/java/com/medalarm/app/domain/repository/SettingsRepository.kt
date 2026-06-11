@@ -1,6 +1,7 @@
 package com.medalarm.app.domain.repository
 
 import com.medalarm.app.domain.model.AppLanguage
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,10 @@ interface SettingsRepository {
     suspend fun setVibrationEnabled(value: Boolean)
     suspend fun setNotificationSoundUri(uri: String?)
     suspend fun setDefaultLowStockThreshold(value: Float)
+
+    suspend fun setSwipeRightAction(action: SwipeAction)
+    suspend fun setSwipeLeftAction(action: SwipeAction)
+    suspend fun setLargeTextMode(value: Boolean)
 
     suspend fun setDisclaimerAccepted()
     suspend fun setOnboardingCompleted(value: Boolean)

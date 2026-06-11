@@ -83,5 +83,8 @@ data class SettingsDto(
     val maxSnoozeCount: Int = 3,
     val vibrationEnabled: Boolean = true,
     val notificationSoundUri: String? = null,
-    val defaultLowStockThreshold: Float = 5f
+    val defaultLowStockThreshold: Float = 5f,
+    val swipeRightAction: String = "TAKEN",
+    val swipeLeftAction: String = "SNOOZE",
+    val largeTextMode: Boolean = false
 )

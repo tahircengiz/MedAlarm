@@ -72,7 +72,10 @@ class JsonBackupRepository @Inject constructor(
                     maxSnoozeCount = settings.maxSnoozeCount,
                     vibrationEnabled = settings.vibrationEnabled,
                     notificationSoundUri = settings.notificationSoundUri,
-                    defaultLowStockThreshold = settings.defaultLowStockThreshold
+                    defaultLowStockThreshold = settings.defaultLowStockThreshold,
+                    swipeRightAction = settings.swipeRightAction.name,
+                    swipeLeftAction = settings.swipeLeftAction.name,
+                    largeTextMode = settings.largeTextMode
                 )
             )
 
