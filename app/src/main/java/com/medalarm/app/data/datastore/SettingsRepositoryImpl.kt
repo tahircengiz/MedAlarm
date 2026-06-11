@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.medalarm.app.domain.model.AppLanguage
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
 import com.medalarm.app.domain.repository.SettingsRepository
@@ -55,6 +56,15 @@ internal class SettingsRepositoryImpl(
     override suspend fun setDefaultLowStockThreshold(value: Float) =
         dataStore.edit { it[Keys.defaultLowStockThreshold] = value }.unit()
 
+    override suspend fun setSwipeRightAction(action: SwipeAction) =
+        dataStore.edit { it[Keys.swipeRightAction] = action.name }.unit()
+
+    override suspend fun setSwipeLeftAction(action: SwipeAction) =
+        dataStore.edit { it[Keys.swipeLeftAction] = action.name }.unit()
+
+    override suspend fun setLargeTextMode(value: Boolean) =
+        dataStore.edit { it[Keys.largeTextMode] = value }.unit()
+
     override suspend fun setDisclaimerAccepted() {
         dataStore.edit {
             it[Keys.disclaimerAccepted] = true
@@ -82,6 +92,11 @@ internal class SettingsRepositoryImpl(
             vibrationEnabled = this[Keys.vibrationEnabled] ?: defaults.vibrationEnabled,
             notificationSoundUri = this[Keys.notificationSoundUri],
             defaultLowStockThreshold = this[Keys.defaultLowStockThreshold] ?: defaults.defaultLowStockThreshold,
+            swipeRightAction = this[Keys.swipeRightAction]?.let { runCatching { SwipeAction.valueOf(it) }.getOrNull() }
+                ?: defaults.swipeRightAction,
+            swipeLeftAction = this[Keys.swipeLeftAction]?.let { runCatching { SwipeAction.valueOf(it) }.getOrNull() }
+                ?: defaults.swipeLeftAction,
+            largeTextMode = this[Keys.largeTextMode] ?: defaults.largeTextMode,
             disclaimerAccepted = this[Keys.disclaimerAccepted] ?: defaults.disclaimerAccepted,
             disclaimerAcceptedAt = this[Keys.disclaimerAcceptedAt]?.let(Instant::ofEpochMilli),
             onboardingCompleted = this[Keys.onboardingCompleted] ?: defaults.onboardingCompleted,
@@ -101,6 +116,9 @@ internal class SettingsRepositoryImpl(
         val vibrationEnabled = booleanPreferencesKey("vibration_enabled")
         val notificationSoundUri = stringPreferencesKey("notification_sound_uri")
         val defaultLowStockThreshold = floatPreferencesKey("default_low_stock_threshold")
+        val swipeRightAction = stringPreferencesKey("swipe_right_action")
+        val swipeLeftAction = stringPreferencesKey("swipe_left_action")
+        val largeTextMode = booleanPreferencesKey("large_text_mode")
         val disclaimerAccepted = booleanPreferencesKey("disclaimer_accepted")
         val disclaimerAcceptedAt = longPreferencesKey("disclaimer_accepted_at")
         val onboardingCompleted = booleanPreferencesKey("onboarding_completed")

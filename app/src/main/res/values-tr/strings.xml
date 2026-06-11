@@ -110,6 +110,11 @@
     <string name="home_prev_day">Önceki gün</string>
     <string name="home_next_day">Sonraki gün</string>
     <string name="home_jump_today">Bugün</string>
+    <string name="home_progress">%1$d / %2$d doz alındı</string>
+    <string name="home_progress_done">Tüm dozlar alındı — harika!</string>
+    <string name="home_swipe_taken_msg">%1$s alındı olarak işaretlendi</string>
+    <string name="home_swipe_snoozed_msg">%1$s ertelendi</string>
+    <string name="home_swipe_skipped_msg">%1$s atlandı</string>
 
     <!-- Common -->
     <string name="cancel">İptal</string>
@@ -162,6 +167,12 @@
     <!-- Settings screen -->
     <string name="settings_title">Ayarlar</string>
     <string name="settings_section_appearance">Görünüm</string>
+    <string name="settings_section_ease">Kullanım kolaylığı</string>
+    <string name="settings_large_text">Büyük yazı</string>
+    <string name="settings_swipe_hint">Ana ekranda doz kartını yana kaydırarak tek hareketle işlem yapabilirsin. Her kaydırma geri alınabilir.</string>
+    <string name="settings_swipe_right">Sağa kaydırma eylemi</string>
+    <string name="settings_swipe_left">Sola kaydırma eylemi</string>
+    <string name="settings_swipe_off">Kapalı</string>
     <string name="settings_section_reminders">Hatırlatmalar</string>
     <string name="settings_section_system">Sistem</string>
     <string name="settings_section_about">Hakkında</string>

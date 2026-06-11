@@ -25,6 +25,7 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Medication
 import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.SwipeRight
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +50,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.BuildConfig
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.AppLanguage
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
 import com.medalarm.app.notification.NotificationChannels
@@ -84,6 +86,8 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item { AppearanceSection(s, viewModel) }
+            item { HorizontalDivider() }
+            item { EaseOfUseSection(s, viewModel) }
             item { HorizontalDivider() }
             item { RemindersSection(s, viewModel) }
             item { HorizontalDivider() }
@@ -162,6 +166,61 @@ private fun AppearanceSection(s: UserSettings, vm: SettingsViewModel) {
         )
     }
 }
+
+@Composable
+private fun EaseOfUseSection(s: UserSettings, vm: SettingsViewModel) {
+    Column {
+        SectionHeader(stringResource(R.string.settings_section_ease), Icons.Outlined.SwipeRight)
+
+        SwitchRow(
+            label = stringResource(R.string.settings_large_text),
+            checked = s.largeTextMode,
+            onChange = vm::setLargeTextMode
+        )
+
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_swipe_hint),
+            modifier = Modifier.padding(horizontal = 24.dp),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_swipe_right),
+            modifier = Modifier.padding(horizontal = 24.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(Modifier.height(4.dp))
+        SegmentedRow(
+            options = swipeActionOptions(),
+            selected = s.swipeRightAction,
+            onSelect = vm::setSwipeRightAction
+        )
+
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_swipe_left),
+            modifier = Modifier.padding(horizontal = 24.dp),
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(Modifier.height(4.dp))
+        SegmentedRow(
+            options = swipeActionOptions(),
+            selected = s.swipeLeftAction,
+            onSelect = vm::setSwipeLeftAction
+        )
+    }
+}
+
+@Composable
+private fun swipeActionOptions(): List<Pair<SwipeAction, String>> = listOf(
+    SwipeAction.TAKEN to stringResource(R.string.action_taken),
+    SwipeAction.SNOOZE to stringResource(R.string.action_snooze),
+    SwipeAction.SKIP to stringResource(R.string.action_skip),
+    SwipeAction.NONE to stringResource(R.string.settings_swipe_off)
+)
 
 @Composable
 private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {

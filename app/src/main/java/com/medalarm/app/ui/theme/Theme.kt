@@ -65,11 +65,13 @@ private val DarkColors = darkColorScheme(
 /**
  * @param darkTheme  null = follow system; explicit value overrides (user preference).
  * @param dynamicColor  Android 12+ wallpaper-derived palette. Off = use the calm static palette above.
+ * @param largeText  Larger type scale for low-vision / elderly users (Settings → Ease of use).
  */
 @Composable
 fun MedAlarmTheme(
     darkTheme: Boolean? = null,
     dynamicColor: Boolean = true,
+    largeText: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val effectiveDark = darkTheme ?: isSystemInDarkTheme()
@@ -83,7 +85,7 @@ fun MedAlarmTheme(
     }
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = MedAlarmTypography,
+        typography = if (largeText) MedAlarmTypographyLarge else MedAlarmTypography,
         content = content
     )
 }

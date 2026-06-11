@@ -136,6 +136,12 @@
     <string name="home_prev_day">Previous day</string>
     <string name="home_next_day">Next day</string>
     <string name="home_jump_today">Today</string>
+    <!-- %1$d = taken, %2$d = total scheduled for the day -->
+    <string name="home_progress">%1$d of %2$d doses taken</string>
+    <string name="home_progress_done">All doses taken — well done!</string>
+    <string name="home_swipe_taken_msg">%1$s marked as taken</string>
+    <string name="home_swipe_snoozed_msg">%1$s snoozed</string>
+    <string name="home_swipe_skipped_msg">%1$s skipped</string>
 
     <!-- Common -->
     <string name="cancel">Cancel</string>
@@ -188,6 +194,12 @@
     <!-- Settings screen -->
     <string name="settings_title">Settings</string>
     <string name="settings_section_appearance">Appearance</string>
+    <string name="settings_section_ease">Ease of use</string>
+    <string name="settings_large_text">Large text</string>
+    <string name="settings_swipe_hint">On the Home screen, swipe a dose card sideways to act on it with one gesture. Every swipe can be undone.</string>
+    <string name="settings_swipe_right">Swipe right action</string>
+    <string name="settings_swipe_left">Swipe left action</string>
+    <string name="settings_swipe_off">Off</string>
     <string name="settings_section_reminders">Reminders</string>
     <string name="settings_section_system">System</string>
     <string name="settings_section_about">About</string>

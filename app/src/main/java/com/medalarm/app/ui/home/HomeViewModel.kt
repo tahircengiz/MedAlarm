@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medalarm.app.domain.model.DoseLog
 import com.medalarm.app.domain.model.Medication
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.repository.DoseLogRepository
 import com.medalarm.app.domain.repository.MedicationRepository
 import com.medalarm.app.domain.repository.SettingsRepository
@@ -35,7 +36,9 @@ data class HomeUiState(
     val selectedDate: LocalDate = LocalDate.now(),
     val medications: List<Medication> = emptyList(),
     val doses: List<DoseLog> = emptyList(),
-    val healthReport: SystemHealthReport? = null
+    val healthReport: SystemHealthReport? = null,
+    val swipeRightAction: SwipeAction = SwipeAction.TAKEN,
+    val swipeLeftAction: SwipeAction = SwipeAction.SNOOZE
 )
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,13 +69,16 @@ class HomeViewModel @Inject constructor(
             doseLogRepository.observeRange(start, end)
         },
         _selectedDate,
-        _healthReport
-    ) { meds, doses, date, health ->
+        _healthReport,
+        settingsRepository.settings
+    ) { meds, doses, date, health, settings ->
         HomeUiState(
             selectedDate = date,
             medications = meds,
             doses = doses.sortedBy { it.scheduledAt },
-            healthReport = health
+            healthReport = health,
+            swipeRightAction = settings.swipeRightAction,
+            swipeLeftAction = settings.swipeLeftAction
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 
@@ -126,5 +132,15 @@ class HomeViewModel @Inject constructor(
 
     fun revert(doseLogId: Long) = viewModelScope.launch {
         revertDoseUseCase(doseLogId)
+    }
+
+    /** Dispatches a configured swipe gesture to the matching dose action. */
+    fun performSwipeAction(doseLogId: Long, action: SwipeAction) {
+        when (action) {
+            SwipeAction.TAKEN -> markTaken(doseLogId)
+            SwipeAction.SNOOZE -> snooze(doseLogId)
+            SwipeAction.SKIP -> skip(doseLogId)
+            SwipeAction.NONE -> Unit
+        }
     }
 }

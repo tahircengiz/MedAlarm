@@ -54,7 +54,9 @@ class MainActivity : AppCompatActivity() {
             }
             val dynamicColor = settings?.useDynamicColor ?: true
 
-            MedAlarmTheme(darkTheme = darkOverride, dynamicColor = dynamicColor) {
+            val largeText = settings?.largeTextMode ?: false
+
+            MedAlarmTheme(darkTheme = darkOverride, dynamicColor = dynamicColor, largeText = largeText) {
                 when {
                     settings == null -> SplashSurface()
                     else -> {

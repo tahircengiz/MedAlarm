@@ -3,6 +3,7 @@ package com.medalarm.app.ui.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.medalarm.app.domain.model.AppLanguage
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
 import com.medalarm.app.domain.repository.SettingsRepository
@@ -73,6 +74,18 @@ class SettingsViewModel @Inject constructor(
 
     fun setLowStockDefault(value: Float) {
         viewModelScope.launch { settingsRepository.setDefaultLowStockThreshold(value) }
+    }
+
+    fun setSwipeRightAction(action: SwipeAction) {
+        viewModelScope.launch { settingsRepository.setSwipeRightAction(action) }
+    }
+
+    fun setSwipeLeftAction(action: SwipeAction) {
+        viewModelScope.launch { settingsRepository.setSwipeLeftAction(action) }
+    }
+
+    fun setLargeTextMode(enabled: Boolean) {
+        viewModelScope.launch { settingsRepository.setLargeTextMode(enabled) }
     }
 
     fun confirmOemAutostart() {

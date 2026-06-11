@@ -21,6 +21,13 @@ data class UserSettings(
     // Stock
     val defaultLowStockThreshold: Float = 5f,
 
+    // Home screen swipe gestures (elderly-friendly quick actions)
+    val swipeRightAction: SwipeAction = SwipeAction.TAKEN,
+    val swipeLeftAction: SwipeAction = SwipeAction.SNOOZE,
+
+    /** Larger typography across the app for low-vision / elderly users. */
+    val largeTextMode: Boolean = false,
+
     // Disclaimer / onboarding
     val disclaimerAccepted: Boolean = false,
     val disclaimerAcceptedAt: Instant? = null,
@@ -33,3 +40,6 @@ data class UserSettings(
 
 enum class AppLanguage { SYSTEM, TR, EN }
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
+
+/** What a horizontal swipe on a Home dose card does. NONE disables that direction. */
+enum class SwipeAction { TAKEN, SNOOZE, SKIP, NONE }

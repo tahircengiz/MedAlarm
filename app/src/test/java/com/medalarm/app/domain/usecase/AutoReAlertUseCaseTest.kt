@@ -7,6 +7,7 @@ import com.medalarm.app.domain.model.DoseStatus
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.MedicationUnit
 import com.medalarm.app.domain.model.Schedule
+import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.domain.model.ThemeMode
 import com.medalarm.app.domain.model.UserSettings
 import com.medalarm.app.domain.repository.DoseLogRepository
@@ -156,6 +157,9 @@ private class FakeSettings(private val fixed: UserSettings) : SettingsRepository
     override suspend fun setVibrationEnabled(value: Boolean) = nyi()
     override suspend fun setNotificationSoundUri(uri: String?) = nyi()
     override suspend fun setDefaultLowStockThreshold(value: Float) = nyi()
+    override suspend fun setSwipeRightAction(action: SwipeAction) = nyi()
+    override suspend fun setSwipeLeftAction(action: SwipeAction) = nyi()
+    override suspend fun setLargeTextMode(value: Boolean) = nyi()
     override suspend fun setDisclaimerAccepted() = nyi()
     override suspend fun setOnboardingCompleted(value: Boolean) = nyi()
     override suspend fun setUserConfirmedOemAutostart(value: Boolean) = nyi()
