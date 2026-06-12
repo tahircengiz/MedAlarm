@@ -138,6 +138,11 @@
     <string name="add_med_photo_pick">Galeriden seç</string>
     <string name="add_med_photo_remove">Fotoğrafı kaldır</string>
     <string name="med_photo_content_desc">İlaç kutusu fotoğrafı</string>
+    <string name="med_photo_add">Fotoğraf ekle</string>
+    <string name="med_photo_view">Görüntüle</string>
+    <string name="med_photo_delete_confirm_title">Fotoğraf silinsin mi?</string>
+    <string name="med_photo_delete_confirm_body">%1$s için kutu fotoğrafı kaldırılacak.</string>
+    <string name="close">Kapat</string>
 
     <string name="add_med_name">Ad</string>
     <string name="add_med_name_hint">örn. Aspirin</string>

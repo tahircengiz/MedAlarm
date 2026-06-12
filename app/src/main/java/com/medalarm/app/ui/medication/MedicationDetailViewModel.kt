@@ -3,6 +3,7 @@ package com.medalarm.app.ui.medication
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medalarm.app.data.image.MedicationPhotoStore
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.Schedule
 import com.medalarm.app.domain.repository.DoseLogRepository
@@ -31,7 +32,8 @@ class MedicationDetailViewModel @Inject constructor(
     private val medicationRepository: MedicationRepository,
     private val doseLogRepository: DoseLogRepository,
     private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase,
-    private val alarmRegistrar: AlarmRegistrar
+    private val alarmRegistrar: AlarmRegistrar,
+    private val photoStore: MedicationPhotoStore
 ) : ViewModel() {
 
     private val medicationId: Long =
@@ -71,6 +73,16 @@ class MedicationDetailViewModel @Inject constructor(
                 doseLogRepository.deleteFuturePending(medicationId, after = now)
             }
             onDone()
+        }
+    }
+
+    /** Clears the box photo: unlink from the medication first, then delete the file. */
+    fun deletePhoto() {
+        viewModelScope.launch {
+            val current = medicationRepository.get(medicationId) ?: return@launch
+            val path = current.photoPath ?: return@launch
+            medicationRepository.update(current.copy(photoPath = null, updatedAt = Instant.now()))
+            photoStore.deleteQuietly(path)
         }
     }
 

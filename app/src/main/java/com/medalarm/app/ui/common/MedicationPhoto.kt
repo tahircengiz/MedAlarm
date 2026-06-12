@@ -2,13 +2,27 @@ package com.medalarm.app.ui.common
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import com.medalarm.app.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -31,6 +45,35 @@ fun rememberMedicationPhoto(path: String?, displaySize: Dp): ImageBitmap? {
         }
     }
     return bitmap
+}
+
+/**
+ * Shows a medication photo at its natural aspect ratio, capped at [maxHeight]
+ * and the available width — never a full-screen takeover, never distorted.
+ * Renders nothing when [path] is null or the file is missing.
+ */
+@Composable
+fun MedicationPhotoBox(
+    path: String?,
+    maxHeight: Dp,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
+    val photo = rememberMedicationPhoto(path, displaySize = maxHeight) ?: return
+    if (photo.width <= 0 || photo.height <= 0) return
+    val ratio = photo.width.toFloat() / photo.height.toFloat()
+    Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Image(
+            bitmap = photo,
+            contentDescription = stringResource(R.string.med_photo_content_desc),
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .heightIn(max = maxHeight)
+                .aspectRatio(ratio)
+                .clip(RoundedCornerShape(16.dp))
+                .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
+        )
+    }
 }
 
 private fun decodeSampled(path: String, targetPx: Int): Bitmap? {

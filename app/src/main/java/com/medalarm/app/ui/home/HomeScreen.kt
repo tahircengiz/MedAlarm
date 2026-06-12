@@ -94,6 +94,7 @@ import com.medalarm.app.domain.model.DoseStatus
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.ui.common.rememberMedicationPhoto
+import com.medalarm.app.ui.common.MedicationPhotoBox
 import com.medalarm.app.ui.common.resolveMedicationColor
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -723,10 +724,18 @@ private fun DoseActionDialog(
         onDismissRequest = onDismiss,
         title = { Text(medication.name, style = MaterialTheme.typography.titleLarge) },
         text = {
-            Text(
-                "${formatTime(dose)} · ${formatDose(medication)}",
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Column {
+                // Box photo so the user instantly recognizes WHICH medication —
+                // proportional, capped height, never a full-screen takeover.
+                MedicationPhotoBox(path = medication.photoPath, maxHeight = 160.dp)
+                if (medication.photoPath != null) {
+                    Spacer(Modifier.height(12.dp))
+                }
+                Text(
+                    "${formatTime(dose)} · ${formatDose(medication)}",
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
         },
         confirmButton = {
             // Big, full-width stacked buttons — large touch targets, obvious hierarchy.
