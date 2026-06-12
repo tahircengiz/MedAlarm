@@ -165,6 +165,11 @@
     <string name="add_med_photo_pick">Choose from gallery</string>
     <string name="add_med_photo_remove">Remove photo</string>
     <string name="med_photo_content_desc">Medication box photo</string>
+    <string name="med_photo_add">Add photo</string>
+    <string name="med_photo_view">View</string>
+    <string name="med_photo_delete_confirm_title">Delete the photo?</string>
+    <string name="med_photo_delete_confirm_body">The box photo for %1$s will be removed.</string>
+    <string name="close">Close</string>
 
     <string name="add_med_name">Name</string>
     <string name="add_med_name_hint">e.g. Aspirin</string>

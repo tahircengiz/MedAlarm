@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PhotoCamera
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -45,11 +46,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.Schedule
+import com.medalarm.app.ui.common.MedicationPhotoBox
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 import java.time.format.DateTimeFormatter
@@ -64,6 +67,8 @@ fun MedicationDetailScreen(
     val state by viewModel.uiState.collectAsState()
     var confirmDelete by remember { mutableStateOf(false) }
     var showAddStock by remember { mutableStateOf(false) }
+    var showPhotoViewer by remember { mutableStateOf(false) }
+    var confirmPhotoDelete by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -94,6 +99,42 @@ fun MedicationDetailScreen(
                 .padding(16.dp)
         ) {
             HeaderCard(med)
+            Spacer(Modifier.height(16.dp))
+
+            // Box photo: proportional preview, tap to enlarge, explicit delete.
+            SectionLabel(stringResource(R.string.add_med_section_photo))
+            Spacer(Modifier.height(8.dp))
+            if (med.photoPath != null) {
+                MedicationPhotoBox(
+                    path = med.photoPath,
+                    maxHeight = 220.dp,
+                    onClick = { showPhotoViewer = true }
+                )
+                Row {
+                    TextButton(onClick = { showPhotoViewer = true }) {
+                        Text(stringResource(R.string.med_photo_view))
+                    }
+                    TextButton(onClick = { confirmPhotoDelete = true }) {
+                        Icon(
+                            Icons.Outlined.Delete,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(stringResource(R.string.add_med_photo_remove))
+                    }
+                }
+            } else {
+                OutlinedButton(onClick = onEdit) {
+                    Icon(
+                        Icons.Outlined.PhotoCamera,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.med_photo_add))
+                }
+            }
             Spacer(Modifier.height(16.dp))
 
             SectionLabel(stringResource(R.string.med_detail_schedule))
@@ -172,6 +213,51 @@ fun MedicationDetailScreen(
             },
             dismissButton = {
                 TextButton(onClick = { confirmDelete = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+    // Enlarged photo viewer — proportional, framed dialog; never a full-screen takeover.
+    if (showPhotoViewer) {
+        val photoPath = state.medication?.photoPath
+        if (photoPath != null) {
+            Dialog(onDismissRequest = { showPhotoViewer = false }) {
+                Card {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        MedicationPhotoBox(path = photoPath, maxHeight = 460.dp)
+                        Spacer(Modifier.height(8.dp))
+                        TextButton(onClick = { showPhotoViewer = false }) {
+                            Text(stringResource(R.string.close))
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (confirmPhotoDelete) {
+        val med = state.medication
+        AlertDialog(
+            onDismissRequest = { confirmPhotoDelete = false },
+            title = { Text(stringResource(R.string.med_photo_delete_confirm_title)) },
+            text = {
+                Text(stringResource(R.string.med_photo_delete_confirm_body, med?.name.orEmpty()))
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmPhotoDelete = false
+                    viewModel.deletePhoto()
+                }) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmPhotoDelete = false }) {
                     Text(stringResource(R.string.cancel))
                 }
             }
