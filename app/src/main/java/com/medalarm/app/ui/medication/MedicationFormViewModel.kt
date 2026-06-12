@@ -53,6 +53,8 @@ data class MedicationFormState(
     val dosageRaw: String = "1",
     val colorHex: String? = null,
     val photoPath: String? = null,
+    /** Last photo import failed (unreadable file, revoked Uri, …) — shown inline. */
+    val photoImportFailed: Boolean = false,
     val schedules: List<ScheduleDraft> = listOf(ScheduleDraft()),
     val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate? = null,
@@ -196,13 +198,18 @@ class MedicationFormViewModel @Inject constructor(
     /** Imports a gallery pick or camera capture into internal storage. */
     fun setPhoto(uri: Uri) {
         viewModelScope.launch {
-            val path = photoStore.importFromUri(uri) ?: return@launch
+            val path = photoStore.importFromUri(uri)
+            if (path == null) {
+                // Surface the failure — a silent no-op here cost us a beta cycle.
+                _state.update { it.copy(photoImportFailed = true) }
+                return@launch
+            }
             importedPhotos += path
-            _state.update { it.copy(photoPath = path) }
+            _state.update { it.copy(photoPath = path, photoImportFailed = false) }
         }
     }
 
-    fun removePhoto() = update { it.copy(photoPath = null) }
+    fun removePhoto() = update { it.copy(photoPath = null, photoImportFailed = false) }
 
     /** Deletes files that are no longer referenced after a successful save. */
     private fun cleanUpPhotosAfterSave(keptPhoto: String?) {

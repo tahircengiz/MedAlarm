@@ -137,6 +137,7 @@
     <string name="add_med_photo_take">Fotoğraf çek</string>
     <string name="add_med_photo_pick">Galeriden seç</string>
     <string name="add_med_photo_remove">Fotoğrafı kaldır</string>
+    <string name="add_med_photo_error">Fotoğraf eklenemedi. Lütfen tekrar dene.</string>
     <string name="med_photo_content_desc">İlaç kutusu fotoğrafı</string>
     <string name="med_photo_add">Fotoğraf ekle</string>
     <string name="med_photo_view">Görüntüle</string>

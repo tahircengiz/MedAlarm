@@ -97,9 +97,11 @@ class MedicationPhotoStore @Inject constructor(
     /** Two-pass decode: bounds first, then sampled to stay near [MAX_DIMENSION_PX]. */
     private fun decodeScaled(source: Uri): Bitmap? {
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        context.contentResolver.openInputStream(source)?.use {
-            BitmapFactory.decodeStream(it, null, bounds)
-        } ?: return null
+        // NOTE: a bounds-only decodeStream always returns null by design, so the
+        // stream-open check must NOT be an elvis on the use-block's result — that
+        // made every import silently fail. Check the stream itself instead.
+        val boundsStream = context.contentResolver.openInputStream(source) ?: return null
+        boundsStream.use { BitmapFactory.decodeStream(it, null, bounds) }
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
         var sampleSize = 1
