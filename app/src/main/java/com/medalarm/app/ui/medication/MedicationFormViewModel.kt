@@ -1,8 +1,10 @@
 package com.medalarm.app.ui.medication
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.medalarm.app.data.image.MedicationPhotoStore
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.MedicationUnit
@@ -50,6 +52,7 @@ data class MedicationFormState(
     val unit: MedicationUnit = MedicationUnit.TABLET,
     val dosageRaw: String = "1",
     val colorHex: String? = null,
+    val photoPath: String? = null,
     val schedules: List<ScheduleDraft> = listOf(ScheduleDraft()),
     val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate? = null,
@@ -74,7 +77,8 @@ class MedicationFormViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val medicationRepository: MedicationRepository,
     private val settingsRepository: SettingsRepository,
-    private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase
+    private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase,
+    private val photoStore: MedicationPhotoStore
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MedicationFormState(isLoading = true))
@@ -84,6 +88,13 @@ class MedicationFormViewModel @Inject constructor(
         savedStateHandle.get<String>(Routes.MEDICATION_ID_KEY)?.toLongOrNull()
 
     val isEditing: Boolean get() = editingId != null
+
+    /** Photo of the loaded medication (editing only); deleted on save if replaced/removed. */
+    private var originalPhotoPath: String? = null
+
+    /** Files imported this session; all but the kept one are orphans to clean up. */
+    private val importedPhotos = mutableSetOf<String>()
+    private var savedSuccessfully = false
 
     init {
         viewModelScope.launch {
@@ -104,6 +115,7 @@ class MedicationFormViewModel @Inject constructor(
                 val drafts = medicationRepository.getSchedules(editingId)
                     .map { it.toDraft() }
                     .ifEmpty { listOf(ScheduleDraft()) }
+                originalPhotoPath = med.photoPath
                 _state.update {
                     MedicationFormState(
                         editingId = editingId,
@@ -111,6 +123,7 @@ class MedicationFormViewModel @Inject constructor(
                         unit = med.unit,
                         dosageRaw = med.dosageAmount.toCleanString(),
                         colorHex = med.colorHex,
+                        photoPath = med.photoPath,
                         schedules = drafts,
                         startDate = med.startDate,
                         endDate = med.endDate,
@@ -157,6 +170,38 @@ class MedicationFormViewModel @Inject constructor(
         s.copy(schedules = s.schedules.mapIndexed { i, d -> if (i == index) transform(d) else d })
     }
 
+    // --- Box photo ---
+
+    /** Uri target for the camera; the capture lands in our FileProvider cache. */
+    fun newCameraCaptureUri(): Uri = photoStore.newCameraCaptureUri()
+
+    /** Imports a gallery pick or camera capture into internal storage. */
+    fun setPhoto(uri: Uri) {
+        viewModelScope.launch {
+            val path = photoStore.importFromUri(uri) ?: return@launch
+            importedPhotos += path
+            _state.update { it.copy(photoPath = path) }
+        }
+    }
+
+    fun removePhoto() = update { it.copy(photoPath = null) }
+
+    /** Deletes files that are no longer referenced after a successful save. */
+    private fun cleanUpPhotosAfterSave(keptPhoto: String?) {
+        importedPhotos.filter { it != keptPhoto }.forEach { photoStore.deleteQuietly(it) }
+        importedPhotos.clear()
+        if (originalPhotoPath != null && originalPhotoPath != keptPhoto) {
+            photoStore.deleteQuietly(originalPhotoPath)
+        }
+        savedSuccessfully = true
+    }
+
+    override fun onCleared() {
+        // Form abandoned: drop every photo imported this session.
+        if (!savedSuccessfully) importedPhotos.forEach { photoStore.deleteQuietly(it) }
+        super.onCleared()
+    }
+
     fun save(onSaved: () -> Unit) {
         val current = _state.value
         if (!current.canSave) return
@@ -178,6 +223,7 @@ class MedicationFormViewModel @Inject constructor(
                             unit = current.unit,
                             dosageAmount = current.dosageRaw.toFloat(),
                             colorHex = current.colorHex,
+                            photoPath = current.photoPath,
                             notes = current.notes.takeIf { it.isNotBlank() },
                             startDate = current.startDate,
                             endDate = current.endDate,
@@ -192,6 +238,7 @@ class MedicationFormViewModel @Inject constructor(
                     // stale future PENDING (removed/edited blocks) and cancels their alarms.
                     generateUpcomingDosesUseCase(editingId, resetFuture = true)
                 }
+                cleanUpPhotosAfterSave(current.photoPath)
                 onSaved()
             } catch (t: Throwable) {
                 _state.update { it.copy(isSaving = false, saveError = t.message) }
@@ -216,6 +263,7 @@ class MedicationFormViewModel @Inject constructor(
         unit = unit,
         dosageAmount = dosageRaw.toFloat(),
         colorHex = colorHex,
+        photoPath = photoPath,
         notes = notes.takeIf { it.isNotBlank() },
         startDate = startDate,
         endDate = endDate,

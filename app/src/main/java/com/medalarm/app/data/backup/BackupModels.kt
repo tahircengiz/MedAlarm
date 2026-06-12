@@ -37,6 +37,9 @@ data class MedicationDto(
     val notes: String? = null,
     val colorHex: String? = null,
     val iconKey: String? = null,
+    /** Device-local file path; the image itself is not part of the backup, so the
+     *  photo silently disappears when restoring on another device. */
+    val photoPath: String? = null,
     val startDate: String,
     val endDate: String? = null,
     val stockAmount: Float? = null,

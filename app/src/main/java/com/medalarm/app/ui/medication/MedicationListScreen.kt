@@ -2,6 +2,7 @@
 
 package com.medalarm.app.ui.medication
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,11 +34,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.Medication
+import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 
 @Composable
@@ -125,20 +129,33 @@ private fun MedicationRow(medication: Medication, onClick: () -> Unit, muted: Bo
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Surface(
-                color = if (muted) accent.copy(alpha = 0.4f) else accent,
-                shape = CircleShape,
-                modifier = Modifier.size(40.dp)
-            ) {
-                androidx.compose.foundation.layout.Box(
-                    contentAlignment = Alignment.Center,
+            val photo = rememberMedicationPhoto(medication.photoPath, displaySize = 40.dp)
+            if (photo != null) {
+                Image(
+                    bitmap = photo,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    alpha = if (muted) 0.5f else 1f,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                )
+            } else {
+                Surface(
+                    color = if (muted) accent.copy(alpha = 0.4f) else accent,
+                    shape = CircleShape,
                     modifier = Modifier.size(40.dp)
                 ) {
-                    Text(
-                        text = medication.name.firstOrNull()?.uppercase().orEmpty(),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = androidx.compose.ui.graphics.Color.White
-                    )
+                    androidx.compose.foundation.layout.Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Text(
+                            text = medication.name.firstOrNull()?.uppercase().orEmpty(),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
                 }
             }
             Spacer(Modifier.width(12.dp))

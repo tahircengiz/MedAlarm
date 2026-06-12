@@ -20,6 +20,10 @@ data class Medication(
     val colorHex: String? = null,
     /** Key into a fixed icon set bundled with the app. Null = default pill icon. */
     val iconKey: String? = null,
+    /** Absolute path of the box photo in app-internal storage. Null = no photo.
+     *  The file may be missing after a backup restore on another device — UI must
+     *  fall back to the letter/icon avatar. */
+    val photoPath: String? = null,
 
     /** Treatment start date (inclusive). */
     val startDate: LocalDate,

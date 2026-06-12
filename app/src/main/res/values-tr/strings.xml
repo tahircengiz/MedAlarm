@@ -100,6 +100,7 @@
     <string name="home_add_first">İlaç ekle</string>
     <string name="home_action_add">Ekle</string>
     <string name="home_action_history">Geçmiş</string>
+    <string name="home_action_stock">Stok</string>
     <string name="home_action_settings">Ayarlar</string>
     <string name="home_critical_banner">MedAlarm şu an hatırlatma gönderemiyor — düzeltmek için dokun.</string>
     <string name="home_no_doses_today">Bugün için planlanmış doz yok.</string>
@@ -131,6 +132,12 @@
     <string name="add_med_section_treatment">Tedavi süresi</string>
     <string name="add_med_section_stock">Stok takibi</string>
     <string name="add_med_section_notes">Notlar</string>
+    <string name="add_med_section_photo">Kutu fotoğrafı</string>
+    <string name="add_med_photo_hint">İlaç kutusunun fotoğrafını ekleyin, tanımak kolaylaşır.</string>
+    <string name="add_med_photo_take">Fotoğraf çek</string>
+    <string name="add_med_photo_pick">Galeriden seç</string>
+    <string name="add_med_photo_remove">Fotoğrafı kaldır</string>
+    <string name="med_photo_content_desc">İlaç kutusu fotoğrafı</string>
 
     <string name="add_med_name">Ad</string>
     <string name="add_med_name_hint">örn. Aspirin</string>
@@ -214,6 +221,15 @@
     <string name="med_add_stock_title">Stok ekle</string>
     <string name="med_add_stock_amount">Eklenecek miktar</string>
     <string name="med_add_stock_confirm">Ekle</string>
+
+    <!-- Stok ekranı -->
+    <string name="stock_screen_title">Stok durumu</string>
+    <string name="stock_screen_empty">Henüz ilaç yok</string>
+    <string name="stock_screen_remaining">Kalan: %1$s</string>
+    <string name="stock_screen_not_tracked">Stok takibi kapalı</string>
+    <string name="stock_screen_untracked_section">Takip edilmeyenler</string>
+    <string name="stock_screen_untracked_hint">Burada sayılması için ilacın düzenleme ekranından stok takibini açın.</string>
+    <string name="stock_screen_refill_title">Stok ekle — %1$s</string>
 
     <!-- Backup -->
     <string name="backup_title">Yedekleme ve Dışa Aktar</string>

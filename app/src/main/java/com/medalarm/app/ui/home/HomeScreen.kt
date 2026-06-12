@@ -6,6 +6,7 @@
 package com.medalarm.app.ui.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.HourglassEmpty
+import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material.icons.outlined.Medication
 import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material.icons.outlined.Schedule
@@ -77,6 +79,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -90,6 +93,7 @@ import com.medalarm.app.domain.model.DoseLog
 import com.medalarm.app.domain.model.DoseStatus
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.SwipeAction
+import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -103,6 +107,7 @@ fun HomeScreen(
     onAddMedication: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenStock: () -> Unit,
     onOpenMedication: (Long) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -156,6 +161,9 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onOpenStock) {
+                        Icon(Icons.Outlined.Inventory2, contentDescription = stringResource(R.string.home_action_stock))
+                    }
                     IconButton(onClick = onOpenHistory) {
                         Icon(Icons.Outlined.History, contentDescription = stringResource(R.string.home_action_history))
                     }
@@ -590,20 +598,33 @@ private fun DoseCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Accent-tinted medication avatar — instantly recognizable color per med.
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-                    .background(accent.copy(alpha = 0.22f))
-            ) {
-                Icon(
-                    Icons.Outlined.Medication,
+            // Box photo when available (far easier to recognize than color alone),
+            // otherwise the accent-tinted medication avatar.
+            val photo = rememberMedicationPhoto(medication.photoPath, displaySize = 52.dp)
+            if (photo != null) {
+                Image(
+                    bitmap = photo,
                     contentDescription = null,
-                    tint = accent,
-                    modifier = Modifier.size(28.dp)
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(CircleShape)
                 )
+            } else {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(CircleShape)
+                        .background(accent.copy(alpha = 0.22f))
+                ) {
+                    Icon(
+                        Icons.Outlined.Medication,
+                        contentDescription = null,
+                        tint = accent,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
             Spacer(Modifier.width(14.dp))
             Column(modifier = Modifier.weight(1f)) {

@@ -26,6 +26,7 @@ object DatabaseModule {
         MedAlarmDatabase::class.java,
         MedAlarmDatabase.DB_NAME
     )
+        .addMigrations(MedAlarmDatabase.MIGRATION_1_2)
         // Pre-1.0: destructive migration is fine. Removed before first public release.
         .fallbackToDestructiveMigration()
         .build()

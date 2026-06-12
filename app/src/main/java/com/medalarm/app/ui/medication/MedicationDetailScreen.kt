@@ -2,6 +2,7 @@
 
 package com.medalarm.app.ui.medication
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +41,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +50,7 @@ import com.medalarm.app.R
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.Schedule
+import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 import java.time.format.DateTimeFormatter
 
@@ -216,20 +222,37 @@ private fun HeaderCard(med: Medication) {
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = accent)
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text(
-                med.name,
-                style = MaterialTheme.typography.headlineSmall,
-                color = androidx.compose.ui.graphics.Color.White
-            )
-            Spacer(Modifier.height(4.dp))
-            val amount = if (med.dosageAmount % 1f == 0f) med.dosageAmount.toInt().toString()
-            else med.dosageAmount.toString()
-            Text(
-                "$amount ${med.unit.name.lowercase()}",
-                style = MaterialTheme.typography.titleMedium,
-                color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
-            )
+        Row(
+            modifier = Modifier.padding(20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val photo = rememberMedicationPhoto(med.photoPath, displaySize = 72.dp)
+            if (photo != null) {
+                Image(
+                    bitmap = photo,
+                    contentDescription = stringResource(R.string.med_photo_content_desc),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                Spacer(Modifier.width(16.dp))
+            }
+            Column {
+                Text(
+                    med.name,
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = androidx.compose.ui.graphics.Color.White
+                )
+                Spacer(Modifier.height(4.dp))
+                val amount = if (med.dosageAmount % 1f == 0f) med.dosageAmount.toInt().toString()
+                else med.dosageAmount.toString()
+                Text(
+                    "$amount ${med.unit.name.lowercase()}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
+                )
+            }
         }
     }
 }

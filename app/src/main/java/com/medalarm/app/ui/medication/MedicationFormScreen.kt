@@ -5,6 +5,12 @@
 
 package com.medalarm.app.ui.medication
 
+import android.content.pm.PackageManager
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -25,6 +31,8 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.PhotoCamera
+import androidx.compose.material.icons.outlined.PhotoLibrary
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DatePicker
@@ -52,12 +60,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
+import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.MedicationUnit
 import com.medalarm.app.domain.model.ScheduleType
@@ -107,6 +119,7 @@ fun MedicationFormScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item { BasicsSection(state, viewModel) }
+            item { PhotoSection(state, viewModel) }
             item { ScheduleSection(state, viewModel) }
             item { TreatmentWindowSection(state, viewModel) }
             item { StockSection(state, viewModel) }
@@ -209,6 +222,86 @@ private fun BasicsSection(state: MedicationFormState, vm: MedicationFormViewMode
                         MaterialTheme.colorScheme.onSurface
                     ) else null
                 ) { Box(Modifier.size(36.dp)) {} }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel) {
+    val context = LocalContext.current
+    val hasCamera = remember {
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
+
+    // The camera writes into this Uri; only consumed when the capture succeeds.
+    var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
+    val takePicture = rememberLauncherForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success) pendingCameraUri?.let { vm.setPhoto(it) }
+        pendingCameraUri = null
+    }
+    val pickFromGallery = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { vm.setPhoto(it) }
+    }
+
+    Column {
+        SectionLabel(stringResource(R.string.add_med_section_photo))
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(R.string.add_med_photo_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(Modifier.height(8.dp))
+
+        val photo = rememberMedicationPhoto(state.photoPath, displaySize = 160.dp)
+        if (state.photoPath != null && photo != null) {
+            Image(
+                bitmap = photo,
+                contentDescription = stringResource(R.string.med_photo_content_desc),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(160.dp)
+                    .clip(MaterialTheme.shapes.medium)
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (hasCamera) {
+                OutlinedButton(onClick = {
+                    val uri = vm.newCameraCaptureUri()
+                    pendingCameraUri = uri
+                    takePicture.launch(uri)
+                }) {
+                    Icon(Icons.Outlined.PhotoCamera, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.add_med_photo_take))
+                }
+            }
+            OutlinedButton(onClick = {
+                pickFromGallery.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }) {
+                Icon(Icons.Outlined.PhotoLibrary, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(R.string.add_med_photo_pick))
+            }
+            if (state.photoPath != null) {
+                OutlinedButton(onClick = { vm.removePhoto() }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.add_med_photo_remove))
+                }
             }
         }
     }

@@ -74,6 +74,21 @@
                 tools:node="remove" />
         </provider>
 
+        <!--
+            FileProvider for camera captures of medication box photos. The camera
+            app writes into our cache via this authority; no CAMERA permission is
+            needed because we delegate capture to the system camera app.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <!-- Alarm + boot/time-change broadcast receivers. -->
         <!--
             Receivers — concrete classes live in data/alarm/.

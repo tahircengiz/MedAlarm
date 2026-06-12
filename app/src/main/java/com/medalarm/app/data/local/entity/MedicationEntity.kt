@@ -15,6 +15,7 @@ data class MedicationEntity(
     val notes: String? = null,
     val colorHex: String? = null,
     val iconKey: String? = null,
+    val photoPath: String? = null,
     val startDate: LocalDate,
     val endDate: LocalDate? = null,
     val stockAmount: Float? = null,

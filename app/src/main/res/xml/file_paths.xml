@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Camera captures land in cache/camera before being imported (downscaled)
+     into filesDir/medication_photos by MedicationPhotoStore. -->
+<paths>
+    <cache-path name="camera" path="camera/" />
+</paths>

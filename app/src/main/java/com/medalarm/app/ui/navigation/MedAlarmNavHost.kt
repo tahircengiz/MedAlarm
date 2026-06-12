@@ -16,6 +16,7 @@ import com.medalarm.app.ui.medication.MedicationListScreen
 import com.medalarm.app.ui.onboarding.OnboardingScreen
 import com.medalarm.app.ui.settings.SettingsScreen
 import com.medalarm.app.ui.settings.SystemStatusScreen
+import com.medalarm.app.ui.stock.StockScreen
 
 @Composable
 fun rememberMedAlarmNavController(): NavHostController = rememberNavController()
@@ -42,6 +43,14 @@ fun MedAlarmNavHost(
                 onAddMedication = { navController.navigate(Routes.ADD_MEDICATION) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
+                onOpenStock = { navController.navigate(Routes.STOCK) },
+                onOpenMedication = { id -> navController.navigate(Routes.medicationDetail(id)) }
+            )
+        }
+
+        composable(Routes.STOCK) {
+            StockScreen(
+                onBack = { navController.popBackStack() },
                 onOpenMedication = { id -> navController.navigate(Routes.medicationDetail(id)) }
             )
         }

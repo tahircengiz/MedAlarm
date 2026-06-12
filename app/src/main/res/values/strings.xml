@@ -126,6 +126,7 @@
     <string name="home_add_first">Add medication</string>
     <string name="home_action_add">Add</string>
     <string name="home_action_history">History</string>
+    <string name="home_action_stock">Stock</string>
     <string name="home_action_settings">Settings</string>
     <string name="home_critical_banner">MedAlarm cannot deliver reminders right now — tap to fix.</string>
     <string name="home_no_doses_today">No doses scheduled for today.</string>
@@ -158,6 +159,12 @@
     <string name="add_med_section_treatment">Treatment window</string>
     <string name="add_med_section_stock">Stock tracking</string>
     <string name="add_med_section_notes">Notes</string>
+    <string name="add_med_section_photo">Box photo</string>
+    <string name="add_med_photo_hint">Add a photo of the medication box so it\'s easy to recognize.</string>
+    <string name="add_med_photo_take">Take photo</string>
+    <string name="add_med_photo_pick">Choose from gallery</string>
+    <string name="add_med_photo_remove">Remove photo</string>
+    <string name="med_photo_content_desc">Medication box photo</string>
 
     <string name="add_med_name">Name</string>
     <string name="add_med_name_hint">e.g. Aspirin</string>
@@ -236,6 +243,15 @@
     <string name="med_add_stock_title">Add stock</string>
     <string name="med_add_stock_amount">Amount to add</string>
     <string name="med_add_stock_confirm">Add</string>
+
+    <!-- Stock overview screen -->
+    <string name="stock_screen_title">Stock overview</string>
+    <string name="stock_screen_empty">No medications yet</string>
+    <string name="stock_screen_remaining">Remaining: %1$s</string>
+    <string name="stock_screen_not_tracked">Stock tracking is off</string>
+    <string name="stock_screen_untracked_section">Not tracked</string>
+    <string name="stock_screen_untracked_hint">Enable stock tracking from the medication\'s edit screen to count it here.</string>
+    <string name="stock_screen_refill_title">Add stock — %1$s</string>
 
     <!-- Backup -->
     <string name="backup_title">Backup &amp; Export</string>
