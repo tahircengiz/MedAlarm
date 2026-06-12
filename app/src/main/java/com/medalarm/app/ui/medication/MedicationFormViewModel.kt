@@ -74,7 +74,7 @@ data class MedicationFormState(
 
 @HiltViewModel
 class MedicationFormViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val medicationRepository: MedicationRepository,
     private val settingsRepository: SettingsRepository,
     private val generateUpcomingDosesUseCase: GenerateUpcomingDosesUseCase,
@@ -172,8 +172,26 @@ class MedicationFormViewModel @Inject constructor(
 
     // --- Box photo ---
 
+    /**
+     * The camera capture target, parked in SavedStateHandle so it survives the
+     * activity being recreated (or the process killed) while the system camera
+     * app is foregrounded — otherwise the captured photo is silently dropped on
+     * return. Uri is Parcelable, so SavedStateHandle stores it directly.
+     */
+    private var pendingCameraUri: Uri?
+        get() = savedStateHandle[KEY_PENDING_CAMERA_URI]
+        set(value) { savedStateHandle[KEY_PENDING_CAMERA_URI] = value }
+
     /** Uri target for the camera; the capture lands in our FileProvider cache. */
-    fun newCameraCaptureUri(): Uri = photoStore.newCameraCaptureUri()
+    fun newCameraCaptureUri(): Uri =
+        photoStore.newCameraCaptureUri().also { pendingCameraUri = it }
+
+    /** Camera returned: import the parked capture on success, then clear it. */
+    fun onCameraCaptured(success: Boolean) {
+        val uri = pendingCameraUri
+        pendingCameraUri = null
+        if (success && uri != null) setPhoto(uri)
+    }
 
     /** Imports a gallery pick or camera capture into internal storage. */
     fun setPhoto(uri: Uri) {
@@ -289,6 +307,10 @@ class MedicationFormViewModel @Inject constructor(
         daysOfWeek = daysOfWeek.ifEmpty { DayOfWeek.values().toSet() },
         mealRelation = mealRelation
     )
+
+    private companion object {
+        const val KEY_PENDING_CAMERA_URI = "pending_camera_uri"
+    }
 }
 
 private fun Float.toCleanString(): String =

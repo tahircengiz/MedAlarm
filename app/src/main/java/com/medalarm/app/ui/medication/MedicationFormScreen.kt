@@ -6,7 +6,6 @@
 package com.medalarm.app.ui.medication
 
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -234,13 +233,12 @@ private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
     }
 
-    // The camera writes into this Uri; only consumed when the capture succeeds.
-    var pendingCameraUri by remember { mutableStateOf<Uri?>(null) }
+    // The capture target lives in the ViewModel (SavedStateHandle), so it survives
+    // the activity/process being recreated while the camera app is foregrounded.
     val takePicture = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) pendingCameraUri?.let { vm.setPhoto(it) }
-        pendingCameraUri = null
+        vm.onCameraCaptured(success)
     }
     val pickFromGallery = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
@@ -278,9 +276,7 @@ private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel
         ) {
             if (hasCamera) {
                 OutlinedButton(onClick = {
-                    val uri = vm.newCameraCaptureUri()
-                    pendingCameraUri = uri
-                    takePicture.launch(uri)
+                    takePicture.launch(vm.newCameraCaptureUri())
                 }) {
                     Icon(Icons.Outlined.PhotoCamera, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(8.dp))
