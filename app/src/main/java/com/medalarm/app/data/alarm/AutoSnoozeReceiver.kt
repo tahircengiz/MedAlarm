@@ -15,9 +15,9 @@ import javax.inject.Inject
 /**
  * Fires one snooze-interval after a reminder is posted. If the user hasn't acted,
  * [AutoReAlertUseCase] counts a snooze, schedules the next check, and tells us to
- * re-post the (persistent) notification so the user is alerted again. The loop
- * continues — across the SNOOZED state — up to the snooze cap. The notification
- * is never dismissed here, so there's no silent gap.
+ * re-post the notification so the user is alerted again. The loop continues —
+ * across the SNOOZED state — up to the snooze cap. The re-post cancels the old
+ * notification first so every device treats it as new (sound + heads-up + watch).
  */
 @AndroidEntryPoint
 class AutoSnoozeReceiver : BroadcastReceiver() {
@@ -37,7 +37,10 @@ class AutoSnoozeReceiver : BroadcastReceiver() {
                         notificationHelper.postMedicationAlarm(
                             doseLog = result.dose,
                             medication = result.medication,
-                            snoozeButtonEnabled = result.snoozeStillAllowed
+                            snoozeButtonEnabled = result.snoozeStillAllowed,
+                            // Cancel + fresh post so the device re-plays sound and
+                            // the watch receives it again (updates don't bridge).
+                            reAlert = true
                         )
                     AutoReAlertUseCase.Result.Stop -> Unit
                 }

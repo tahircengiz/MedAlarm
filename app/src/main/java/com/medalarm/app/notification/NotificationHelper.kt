@@ -18,8 +18,21 @@ class NotificationHelper @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    fun postMedicationAlarm(doseLog: DoseLog, medication: Medication, snoozeButtonEnabled: Boolean) {
+    fun postMedicationAlarm(
+        doseLog: DoseLog,
+        medication: Medication,
+        snoozeButtonEnabled: Boolean,
+        reAlert: Boolean = false
+    ) {
         val notifId = notificationIdFor(doseLog.id)
+
+        // A re-alert must behave like a brand-new notification, not an update:
+        // many OEMs (Samsung, Xiaomi, ...) silently coalesce updates to an
+        // already-visible notification — no sound, no heads-up — and watches
+        // only bridge *new* notifications. Cancel first, then post fresh.
+        if (reAlert) {
+            NotificationManagerCompat.from(context).cancel(notifId)
+        }
 
         val tapIntent = PendingIntent.getActivity(
             context,
@@ -54,10 +67,14 @@ class NotificationHelper @Inject constructor(
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-            // Persistent until the user explicitly acts: don't auto-dismiss and
-            // keep it ongoing (not swipeable) so a missed reminder stays visible.
+            // Don't auto-dismiss on tap — only an explicit action clears it.
+            // Deliberately NOT setOngoing(true): ongoing notifications are never
+            // bridged to Wear OS or band companion apps, so the watch stays
+            // silent. Swipe-away is acceptable — the re-alert loop re-posts
+            // every snooze interval until the user acts or the cap is reached.
             .setAutoCancel(false)
-            .setOngoing(true)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true)
             .addAction(0, context.getString(R.string.action_taken), takenPi)
             .addAction(0, context.getString(R.string.action_skip), skipPi)
 
