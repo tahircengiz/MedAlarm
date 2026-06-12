@@ -269,6 +269,15 @@ private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel
             Spacer(Modifier.height(8.dp))
         }
 
+        if (state.photoImportFailed) {
+            Text(
+                stringResource(R.string.add_med_photo_error),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(Modifier.height(8.dp))
+        }
+
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),

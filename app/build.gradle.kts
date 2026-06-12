@@ -49,8 +49,8 @@ android {
         //   versionCode is monotonically increasing — bump for every CI-released build
         //   The CI release process bumps versionCode automatically; do not edit
         //   versionCode manually except for major resets at a final release.
-        versionCode = 11
-        versionName = "0.1.0-beta10"
+        versionCode = 12
+        versionName = "0.1.0-beta11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true

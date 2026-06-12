@@ -164,6 +164,7 @@
     <string name="add_med_photo_take">Take photo</string>
     <string name="add_med_photo_pick">Choose from gallery</string>
     <string name="add_med_photo_remove">Remove photo</string>
+    <string name="add_med_photo_error">Could not add the photo. Please try again.</string>
     <string name="med_photo_content_desc">Medication box photo</string>
     <string name="med_photo_add">Add photo</string>
     <string name="med_photo_view">View</string>
