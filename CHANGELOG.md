@@ -8,6 +8,11 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta14
+- **Stok düzenleme** eklendi: ilaç detayında "Düzenle" ile mevcut stok miktarını doğrudan istediğin değere ayarlayabilirsin (önceden yalnızca üzerine ekleme vardı).
+- **Tek seferlik / tek gün ilaç** seçeneği: tedavi süresinde "Tek gün" modunu seçip ilacın yalnızca belirli bir günde, belirlediğin saatlerde hatırlatılmasını sağlayabilirsin.
+- Ayarlar → Hakkında bölümüne geliştirici ve kaynak kodu (GitHub) bağlantıları eklendi.
+
 ## v0.1.0-beta13
 - Kırpma ekranındaki **onayla (✓), döndür ve iptal** düğmeleri görünmüyordu; artık üst çubukta görünüyor, böylece kırpmayı tamamlayıp ekrandan çıkabilirsin.
 

@@ -160,6 +160,10 @@
     <string name="add_med_start_date">Başlangıç tarihi</string>
     <string name="add_med_end_date">Bitiş tarihi</string>
     <string name="add_med_open_ended">Süresiz</string>
+    <string name="add_med_treatment_single_day">Tek gün</string>
+    <string name="add_med_treatment_range">Tarih aralığı</string>
+    <string name="add_med_date">Tarih</string>
+    <string name="add_med_single_day_hint">Tek seferlik ilaç: yalnızca seçilen günde, belirlediğin saat(ler)de hatırlatılır.</string>
 
     <string name="add_med_track_stock">Bu ilaç için stok takip et</string>
     <string name="add_med_stock_amount">Mevcut miktar</string>
@@ -207,6 +211,7 @@
 
     <string name="settings_about_version">Sürüm</string>
     <string name="settings_about_source">GitHub kaynak kodu</string>
+    <string name="settings_about_developer">Geliştirici</string>
 
     <!-- Medication list/detail -->
     <string name="med_list_title">İlaçlar</string>
@@ -227,6 +232,9 @@
     <string name="med_add_stock_title">Stok ekle</string>
     <string name="med_add_stock_amount">Eklenecek miktar</string>
     <string name="med_add_stock_confirm">Ekle</string>
+    <string name="med_edit_stock">Düzenle</string>
+    <string name="med_edit_stock_title">Stoğu düzenle</string>
+    <string name="med_edit_stock_amount">Mevcut miktar</string>
 
     <!-- Stok ekranı -->
     <string name="stock_screen_title">Stok durumu</string>

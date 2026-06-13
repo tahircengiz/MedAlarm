@@ -81,6 +81,20 @@ internal class MedicationRepositoryImpl(
         )
     }
 
+    override suspend fun setStock(id: Long, amount: Float) {
+        val med = medicationDao.getById(id) ?: return
+        val newAmount = amount.coerceAtLeast(0f)
+        // Re-arm low-stock alerts if the corrected amount is back above the threshold.
+        val clearNotified = med.stockThreshold == null || newAmount > med.stockThreshold
+        medicationDao.update(
+            med.copy(
+                stockAmount = newAmount,
+                lowStockNotified = if (clearNotified) false else med.lowStockNotified,
+                updatedAt = Instant.now()
+            )
+        )
+    }
+
     override suspend fun markLowStockNotified(id: Long) {
         medicationDao.markLowStockNotified(id, Instant.now().toEpochMilli())
     }

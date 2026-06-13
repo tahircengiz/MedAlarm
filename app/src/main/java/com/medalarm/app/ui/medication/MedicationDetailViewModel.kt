@@ -93,6 +93,14 @@ class MedicationDetailViewModel @Inject constructor(
         }
     }
 
+    /** Sets the stock to an exact value (manual correction). */
+    fun setStock(amount: Float) {
+        if (amount < 0f) return
+        viewModelScope.launch {
+            medicationRepository.setStock(medicationId, amount)
+        }
+    }
+
     fun delete(onDone: () -> Unit) {
         viewModelScope.launch {
             val now = Instant.now()

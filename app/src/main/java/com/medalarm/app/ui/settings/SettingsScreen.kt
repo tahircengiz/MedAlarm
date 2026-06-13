@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Backup
 import androidx.compose.material.icons.outlined.ChevronRight
+import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Medication
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.outlined.SwipeRight
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -327,6 +329,7 @@ private fun SystemSection(
 
 @Composable
 private fun AboutSection() {
+    val uriHandler = LocalUriHandler.current
     Column {
         SectionHeader(stringResource(R.string.settings_section_about), Icons.Outlined.Info)
         Row(
@@ -358,13 +361,20 @@ private fun AboutSection() {
                 }
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 12.dp),
-        ) {
-            Text(stringResource(R.string.settings_about_source), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
+
+        // Developer — tappable, opens the GitHub profile.
+        LinkRow(
+            label = stringResource(R.string.settings_about_developer),
+            value = "@$GITHUB_USER",
+            onClick = { uriHandler.openUri("https://github.com/$GITHUB_USER") }
+        )
+
+        // Source code — tappable, opens the repository.
+        NavigationRow(
+            label = stringResource(R.string.settings_about_source),
+            leadingIcon = Icons.Outlined.Code,
+            onClick = { uriHandler.openUri("https://github.com/$GITHUB_USER/MedAlarm") }
+        )
     }
 }
 
@@ -478,3 +488,27 @@ private fun NavigationRow(
         }
     }
 }
+
+/** Label on the left, a muted value (e.g. a handle) on the right; whole row tappable. */
+@Composable
+private fun LinkRow(label: String, value: String, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.surface,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
+            Text(value, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+/** GitHub handle used for the About → Developer / Source links. */
+private const val GITHUB_USER = "tahircengiz"

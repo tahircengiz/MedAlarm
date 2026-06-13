@@ -172,6 +172,27 @@ class MedicationFormViewModel @Inject constructor(
         s.copy(schedules = s.schedules.mapIndexed { i, d -> if (i == index) transform(d) else d })
     }
 
+    // --- Treatment window mode (open-ended / date range / single day) ---
+
+    fun setOpenEnded() = update { it.copy(endDate = null) }
+
+    /** One-time: the medication is only due on [MedicationFormState.startDate]. Coerce
+     *  schedules to fixed clock times — weekly rules make no sense for a single day. */
+    fun setSingleDay() = update { s ->
+        s.copy(
+            endDate = s.startDate,
+            schedules = s.schedules.map { it.copy(type = ScheduleType.DAILY_TIMES) }
+        )
+    }
+
+    fun setDateRange() = update { s ->
+        val end = if (s.endDate == null || !s.endDate.isAfter(s.startDate)) s.startDate.plusDays(6) else s.endDate
+        s.copy(endDate = end)
+    }
+
+    /** Picks the single day; keeps start == end so it stays one-time. */
+    fun setSingleDayDate(date: LocalDate) = update { it.copy(startDate = date, endDate = date) }
+
     // --- Box photo ---
 
     /**
