@@ -154,6 +154,15 @@
 
     <!-- Add medication -->
     <string name="add_med_title">New medication</string>
+    <string name="add_one_time_title">One-time medication</string>
+    <string name="add_one_time_when">When is it taken?</string>
+    <string name="add_med_time">Time</string>
+
+    <!-- Add type chooser -->
+    <string name="add_type_title">How will it be used?</string>
+    <string name="add_type_subtitle">Will this medication be taken regularly, or just once?</string>
+    <string name="add_type_regular">Regular use</string>
+    <string name="add_type_one_time">One time only</string>
     <string name="add_med_section_basics">Basics</string>
     <string name="add_med_section_schedule">Schedule</string>
     <string name="add_med_section_treatment">Treatment window</string>

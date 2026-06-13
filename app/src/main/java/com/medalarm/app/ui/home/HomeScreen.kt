@@ -105,7 +105,7 @@ import java.time.format.FormatStyle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onAddMedication: () -> Unit,
+    onAddMedication: (oneTime: Boolean) -> Unit,
     onOpenSettings: () -> Unit,
     onOpenHistory: () -> Unit,
     onOpenStock: () -> Unit,
@@ -114,6 +114,7 @@ fun HomeScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     var actionDose by remember { mutableStateOf<DoseLog?>(null) }
+    var showAddTypeChooser by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -178,7 +179,7 @@ fun HomeScreen(
         floatingActionButton = {
             if (state.medications.isNotEmpty()) {
                 ExtendedFloatingActionButton(
-                    onClick = onAddMedication,
+                    onClick = { showAddTypeChooser = true },
                     icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
                     text = { Text(stringResource(R.string.home_add_first)) },
                     containerColor = MaterialTheme.colorScheme.primary,
@@ -197,7 +198,7 @@ fun HomeScreen(
             }
 
             if (state.medications.isEmpty()) {
-                EmptyState(onAdd = onAddMedication)
+                EmptyState(onAdd = { showAddTypeChooser = true })
             } else {
                 DayHeader(
                     selectedDate = state.selectedDate,
@@ -217,6 +218,17 @@ fun HomeScreen(
                 )
             }
         }
+    }
+
+    // Ask one-time vs regular before opening the add form.
+    if (showAddTypeChooser) {
+        com.medalarm.app.ui.medication.AddMedicationTypeDialog(
+            onDismiss = { showAddTypeChooser = false },
+            onPick = { oneTime ->
+                showAddTypeChooser = false
+                onAddMedication(oneTime)
+            }
+        )
     }
 
     // Manual action sheet — tap a dose to mark it without waiting for the notification.

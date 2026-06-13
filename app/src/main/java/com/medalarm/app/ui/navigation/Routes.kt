@@ -12,7 +12,7 @@ object Routes {
     const val SETTINGS_BACKUP = "settings/backup"
     const val MEDICATIONS = "medications"
     const val STOCK = "stock"
-    const val ADD_MEDICATION = "medication/add"
+    const val ADD_MEDICATION = "medication/add?oneTime={oneTime}"
     const val EDIT_MEDICATION = "medication/edit/{medicationId}"
     const val MEDICATION_DETAIL = "medication/{medicationId}"
     const val HISTORY = "history"
@@ -20,6 +20,10 @@ object Routes {
     /** SavedStateHandle key matching the path placeholder. */
     const val MEDICATION_ID_KEY = "medicationId"
 
+    /** Query arg: whether the add form opens in one-time (single-dose) mode. */
+    const val ONE_TIME_KEY = "oneTime"
+
+    fun addMedication(oneTime: Boolean) = "medication/add?oneTime=$oneTime"
     fun editMedication(id: Long) = "medication/edit/$id"
     fun medicationDetail(id: Long) = "medication/$id"
 }

@@ -94,7 +94,11 @@ fun MedicationFormScreen(
     viewModel: MedicationFormViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
-    val titleRes = if (viewModel.isEditing) R.string.med_edit_title else R.string.add_med_title
+    val titleRes = when {
+        viewModel.isEditing -> R.string.med_edit_title
+        state.isOneTime -> R.string.add_one_time_title
+        else -> R.string.add_med_title
+    }
 
     Scaffold(
         topBar = {
@@ -124,11 +128,18 @@ fun MedicationFormScreen(
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             item { BasicsSection(state, viewModel) }
-            item { PhotoSection(state, viewModel) }
-            item { ScheduleSection(state, viewModel) }
-            item { TreatmentWindowSection(state, viewModel) }
-            item { StockSection(state, viewModel) }
-            item { NotesSection(state, viewModel) }
+            if (state.isOneTime) {
+                // One-time: just when it's taken + an optional photo. No recurring
+                // schedule, treatment window, or stock tracking.
+                item { WhenOneTimeSection(state, viewModel) }
+                item { PhotoSection(state, viewModel) }
+            } else {
+                item { PhotoSection(state, viewModel) }
+                item { ScheduleSection(state, viewModel) }
+                item { TreatmentWindowSection(state, viewModel) }
+                item { StockSection(state, viewModel) }
+                item { NotesSection(state, viewModel) }
+            }
             state.saveError?.let { err ->
                 item {
                     Text(
@@ -555,6 +566,52 @@ private fun TimePickerDialog(onDismiss: () -> Unit, onTimeSelected: (LocalTime) 
                 }
             }
         }
+    }
+}
+
+/** One-time medication: a single date + time. */
+@Composable
+private fun WhenOneTimeSection(state: MedicationFormState, vm: MedicationFormViewModel) {
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    val time = state.schedules.firstOrNull()?.times?.firstOrNull() ?: LocalTime.of(8, 0)
+
+    Column {
+        SectionLabel(stringResource(R.string.add_one_time_when))
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { showDatePicker = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("${stringResource(R.string.add_med_date)}: ${state.startDate.format(DATE_FMT)}")
+        }
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = { showTimePicker = true },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("${stringResource(R.string.add_med_time)}: ${time.format(TIME_FMT)}")
+        }
+    }
+
+    if (showDatePicker) {
+        DatePickerSimple(
+            initial = state.startDate,
+            onDismiss = { showDatePicker = false },
+            onPick = { d ->
+                vm.setSingleDayDate(d)
+                showDatePicker = false
+            }
+        )
+    }
+    if (showTimePicker) {
+        TimePickerDialog(
+            onDismiss = { showTimePicker = false },
+            onTimeSelected = { t ->
+                vm.setOneTimeTime(t)
+                showTimePicker = false
+            }
+        )
     }
 }
 

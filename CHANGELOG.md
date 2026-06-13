@@ -8,6 +8,11 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta15
+- **İlaç ekleme artık önce soruyor:** "İlaç ekle"ye dokununca ilacın **düzenli mi yoksa tek seferlik mi** kullanılacağını seçiyorsun.
+  - Düzenli: alışılmış tam form (program, tedavi süresi, stok…).
+  - Tek seferlik: yalnızca ilaç bilgisi, doz, ne zaman alınacağı (gün + saat) ve isteğe bağlı fotoğraf — sade ve hızlı.
+
 ## v0.1.0-beta14
 - **Stok düzenleme** eklendi: ilaç detayında "Düzenle" ile mevcut stok miktarını doğrudan istediğin değere ayarlayabilirsin (önceden yalnızca üzerine ekleme vardı).
 - **Tek seferlik / tek gün ilaç** seçeneği: tedavi süresinde "Tek gün" modunu seçip ilacın yalnızca belirli bir günde, belirlediğin saatlerde hatırlatılmasını sağlayabilirsin.

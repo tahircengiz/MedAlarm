@@ -40,7 +40,7 @@ fun MedAlarmNavHost(
 
         composable(Routes.HOME) {
             HomeScreen(
-                onAddMedication = { navController.navigate(Routes.ADD_MEDICATION) },
+                onAddMedication = { oneTime -> navController.navigate(Routes.addMedication(oneTime)) },
                 onOpenSettings = { navController.navigate(Routes.SETTINGS) },
                 onOpenHistory = { navController.navigate(Routes.HISTORY) },
                 onOpenStock = { navController.navigate(Routes.STOCK) },
@@ -59,11 +59,19 @@ fun MedAlarmNavHost(
             MedicationListScreen(
                 onBack = { navController.popBackStack() },
                 onOpenMedication = { id -> navController.navigate(Routes.medicationDetail(id)) },
-                onAddMedication = { navController.navigate(Routes.ADD_MEDICATION) }
+                onAddMedication = { oneTime -> navController.navigate(Routes.addMedication(oneTime)) }
             )
         }
 
-        composable(Routes.ADD_MEDICATION) {
+        composable(
+            Routes.ADD_MEDICATION,
+            arguments = listOf(
+                navArgument(Routes.ONE_TIME_KEY) {
+                    type = NavType.BoolType
+                    defaultValue = false
+                }
+            )
+        ) {
             MedicationFormScreen(
                 onClose = { navController.popBackStack() },
                 onSaved = { navController.popBackStack() }
