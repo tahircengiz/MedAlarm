@@ -7,6 +7,24 @@
 
 ---
 
+## 📥 İndir / Download
+
+En güncel sürümü ve önceki tüm sürümleri buradan bulabilirsiniz:
+
+### ➡️ **[Tüm sürümler / All releases](https://github.com/tahircengiz/MedAlarm/releases)**
+
+**Nasıl kurulur (Türkçe):**
+1. Yukarıdaki bağlantıyı açın; en üstteki sürüm en yenisidir.
+2. O sürümün **Assets** bölümündeki `MedAlarm-vX.Y.Z.apk` dosyasını telefonunuza indirin.
+3. Dosyayı açın ve "bilinmeyen kaynaklardan kuruluma izin ver" isteğini onaylayın.
+4. İlk açılışta kurulum sihirbazını tamamlayın — özellikle **pil optimizasyonu muafiyeti** ve (Xiaomi/Samsung/Huawei vb.) **arka planda çalışma** izinlerini verin, yoksa hatırlatmalar gecikebilir.
+
+**How to install (English):** Open the [releases page](https://github.com/tahircengiz/MedAlarm/releases), download the `MedAlarm-vX.Y.Z.apk` from the **Assets** of the topmost (newest) release, open it on your Android phone, and allow installation from this source. Complete the on-boarding permission wizard on first launch.
+
+> ℹ️ Sürümler şu an **beta** olarak işaretlidir. Her sürümün açıklamasında o sürümdeki yenilikler **Türkçe** olarak listelenir — değişiklik geçmişi için [CHANGELOG.md](CHANGELOG.md) dosyasına da bakabilirsiniz.
+
+---
+
 ## 🇹🇷 Türkçe
 
 ### Vizyon
@@ -56,7 +74,11 @@ gerekmeyecek**. Verileriniz cihazınızdan dışarı çıkmaz.
 - ✅ TTS — bildirimde ilaç adının sesli okunması
 - ✅ JSON yedekleme (manuel export/import)
 - ✅ PDF rapor (doktora göstermek için)
-- ✅ Modern, minimalist Material 3 arayüz
+- ✅ Renkli, modern Material 3 arayüz — yaşlı kullanıcılar için kolay kullanım
+- ✅ İlaç kutusu fotoğrafı ekleme (kamera/galeri) + kırpma — hangi ilaç olduğu bir bakışta belli
+- ✅ Sağa/sola kaydırarak hızlı işlem (alındı / ertele / atla), ayarlardan değiştirilebilir
+- ✅ Büyük yazı modu (düşük görme / yaşlı kullanıcılar için)
+- ✅ Akıllı saate düşen bildirimler + yanıtlanmazsa tekrar uyarı
 - ✅ Açık / koyu tema + sistem teması
 - ✅ Türkçe + İngilizce
 - ✅ Sistem durumu kontrolü (izinler, pil optimizasyonu, autostart)
@@ -70,7 +92,8 @@ gerekmeyecek**. Verileriniz cihazınızdan dışarı çıkmaz.
 
 ### Geliştirme durumu
 
-🚧 Erken tasarım aşaması. Henüz kod yok — sadece dokümantasyon.
+🚀 **Beta yayında.** Uygulama çalışır durumda ve aktif geliştiriliyor.
+APK'yı yukarıdaki [İndir / Download](#-i̇ndir--download) bölümünden alabilirsiniz.
 
 ---
 
@@ -120,11 +143,15 @@ See the Turkish section above; the feature set is identical.
 
 ### Status
 
-🚧 Early design phase. No code yet — documentation only.
+🚀 **Beta released.** The app is functional and under active development.
+Get the APK from the [Download](#-i̇ndir--download) section above.
 
 ---
 
 ## License
 
-To be decided. Likely GPL-3.0 or Apache-2.0 to keep the project open and
-prevent commercial forks with ads.
+Licensed under the **GNU General Public License v3.0** — see [LICENSE](LICENSE).
+
+This copyleft license keeps the project open and prevents closed-source
+commercial forks (e.g. re-releases with ads). You are free to use, study,
+share, and modify the app, provided derivative works remain under GPL-3.0.
