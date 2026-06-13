@@ -127,6 +127,15 @@
 
     <!-- Add medication -->
     <string name="add_med_title">Yeni ilaç</string>
+    <string name="add_one_time_title">Tek seferlik ilaç</string>
+    <string name="add_one_time_when">Ne zaman alınacak?</string>
+    <string name="add_med_time">Saat</string>
+
+    <!-- İlaç türü seçimi -->
+    <string name="add_type_title">Nasıl kullanılacak?</string>
+    <string name="add_type_subtitle">Bu ilaç düzenli mi kullanılacak, yoksa tek seferlik mi?</string>
+    <string name="add_type_regular">Düzenli kullanım</string>
+    <string name="add_type_one_time">Tek seferlik</string>
     <string name="add_med_section_basics">Temel bilgiler</string>
     <string name="add_med_section_schedule">Program</string>
     <string name="add_med_section_treatment">Tedavi süresi</string>

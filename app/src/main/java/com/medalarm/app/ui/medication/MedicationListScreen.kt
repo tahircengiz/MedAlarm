@@ -32,6 +32,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,10 +51,21 @@ import com.medalarm.app.ui.common.resolveMedicationColor
 fun MedicationListScreen(
     onBack: () -> Unit,
     onOpenMedication: (Long) -> Unit,
-    onAddMedication: () -> Unit,
+    onAddMedication: (oneTime: Boolean) -> Unit,
     viewModel: MedicationListViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    var showAddTypeChooser by remember { mutableStateOf(false) }
+
+    if (showAddTypeChooser) {
+        AddMedicationTypeDialog(
+            onDismiss = { showAddTypeChooser = false },
+            onPick = { oneTime ->
+                showAddTypeChooser = false
+                onAddMedication(oneTime)
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
@@ -65,7 +79,7 @@ fun MedicationListScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddMedication) {
+            FloatingActionButton(onClick = { showAddTypeChooser = true }) {
                 Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.add))
             }
         }

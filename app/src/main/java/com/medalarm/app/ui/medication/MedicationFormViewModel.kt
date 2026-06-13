@@ -55,6 +55,8 @@ data class MedicationFormState(
     val photoPath: String? = null,
     /** Last photo import failed (unreadable file, revoked Uri, …) — shown inline. */
     val photoImportFailed: Boolean = false,
+    /** One-time (single-dose) medication: the form shows a simplified set of fields. */
+    val isOneTime: Boolean = false,
     val schedules: List<ScheduleDraft> = listOf(ScheduleDraft()),
     val startDate: LocalDate = LocalDate.now(),
     val endDate: LocalDate? = null,
@@ -89,6 +91,9 @@ class MedicationFormViewModel @Inject constructor(
     private val editingId: Long? =
         savedStateHandle.get<String>(Routes.MEDICATION_ID_KEY)?.toLongOrNull()
 
+    /** True when the add flow was opened in one-time (single-dose) mode. */
+    private val oneTimeArg: Boolean = savedStateHandle.get<Boolean>(Routes.ONE_TIME_KEY) ?: false
+
     val isEditing: Boolean get() = editingId != null
 
     /** Photo of the loaded medication (editing only); deleted on save if replaced/removed. */
@@ -105,6 +110,9 @@ class MedicationFormViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                         isLoading = false,
+                        isOneTime = oneTimeArg,
+                        // One-time meds are due on a single day; pin end == start.
+                        endDate = if (oneTimeArg) it.startDate else it.endDate,
                         stockThresholdRaw = defaults.defaultLowStockThreshold.toCleanString()
                     )
                 }
@@ -134,6 +142,8 @@ class MedicationFormViewModel @Inject constructor(
                         stockThresholdRaw = med.stockThreshold?.toCleanString()
                             ?: defaults.defaultLowStockThreshold.toCleanString(),
                         notes = med.notes.orEmpty(),
+                        // A saved medication whose window is a single day is a one-time med.
+                        isOneTime = med.endDate != null && med.endDate == med.startDate,
                         isLoading = false
                     )
                 }
@@ -192,6 +202,20 @@ class MedicationFormViewModel @Inject constructor(
 
     /** Picks the single day; keeps start == end so it stays one-time. */
     fun setSingleDayDate(date: LocalDate) = update { it.copy(startDate = date, endDate = date) }
+
+    /** One-time mode: a single dose at one clock time. Replaces the schedule list with
+     *  one DAILY_TIMES block, preserving its id when editing so the row is updated. */
+    fun setOneTimeTime(time: LocalTime) = update { s ->
+        s.copy(
+            schedules = listOf(
+                ScheduleDraft(
+                    id = s.schedules.firstOrNull()?.id ?: 0,
+                    type = ScheduleType.DAILY_TIMES,
+                    times = listOf(time)
+                )
+            )
+        )
+    }
 
     // --- Box photo ---
 
