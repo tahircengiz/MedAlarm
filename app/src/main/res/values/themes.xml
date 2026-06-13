@@ -11,4 +11,17 @@
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
         <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
     </style>
+
+    <!--
+        The image cropper (CanHub) renders its Confirm (✓), rotate and Cancel (back)
+        controls as ACTION BAR menu items. The app's own theme is NoActionBar, so the
+        crop screen must use a theme WITH an action bar or those controls disappear and
+        the user gets stuck. Teal accent matches the in-app palette. DayNight handles
+        light/dark automatically.
+    -->
+    <style name="Theme.MedAlarm.Crop" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimary">#00696C</item>
+        <item name="colorPrimaryDark">#00504F</item>
+        <item name="colorAccent">#00696C</item>
+    </style>
 </resources>
