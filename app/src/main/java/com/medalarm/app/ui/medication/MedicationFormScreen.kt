@@ -558,6 +558,8 @@ private fun TimePickerDialog(onDismiss: () -> Unit, onTimeSelected: (LocalTime) 
     }
 }
 
+private enum class TreatmentMode { SINGLE_DAY, RANGE, OPEN_ENDED }
+
 @Composable
 private fun TreatmentWindowSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     Column {
@@ -566,35 +568,62 @@ private fun TreatmentWindowSection(state: MedicationFormState, vm: MedicationFor
 
         var showStartPicker by remember { mutableStateOf(false) }
         var showEndPicker by remember { mutableStateOf(false) }
+        var showSingleDayPicker by remember { mutableStateOf(false) }
 
-        OutlinedButton(
-            onClick = { showStartPicker = true },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("${stringResource(R.string.add_med_start_date)}: ${state.startDate.format(DATE_FMT)}")
+        val mode = when {
+            state.endDate == null -> TreatmentMode.OPEN_ENDED
+            state.endDate == state.startDate -> TreatmentMode.SINGLE_DAY
+            else -> TreatmentMode.RANGE
+        }
+
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(
+                selected = mode == TreatmentMode.SINGLE_DAY,
+                onClick = { vm.setSingleDay() },
+                label = { Text(stringResource(R.string.add_med_treatment_single_day)) }
+            )
+            FilterChip(
+                selected = mode == TreatmentMode.RANGE,
+                onClick = { vm.setDateRange() },
+                label = { Text(stringResource(R.string.add_med_treatment_range)) }
+            )
+            FilterChip(
+                selected = mode == TreatmentMode.OPEN_ENDED,
+                onClick = { vm.setOpenEnded() },
+                label = { Text(stringResource(R.string.add_med_open_ended)) }
+            )
         }
 
         Spacer(Modifier.height(12.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Checkbox(
-                checked = state.endDate == null,
-                onCheckedChange = { open ->
-                    vm.update { s ->
-                        if (open) s.copy(endDate = null)
-                        else s.copy(endDate = s.startDate.plusDays(6))
-                    }
-                }
-            )
-            Text(stringResource(R.string.add_med_open_ended))
-        }
 
-        if (state.endDate != null) {
-            Spacer(Modifier.height(8.dp))
+        if (mode == TreatmentMode.SINGLE_DAY) {
             OutlinedButton(
-                onClick = { showEndPicker = true },
+                onClick = { showSingleDayPicker = true },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("${stringResource(R.string.add_med_end_date)}: ${state.endDate!!.format(DATE_FMT)}")
+                Text("${stringResource(R.string.add_med_date)}: ${state.startDate.format(DATE_FMT)}")
+            }
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.add_med_single_day_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        } else {
+            OutlinedButton(
+                onClick = { showStartPicker = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("${stringResource(R.string.add_med_start_date)}: ${state.startDate.format(DATE_FMT)}")
+            }
+            if (mode == TreatmentMode.RANGE) {
+                Spacer(Modifier.height(8.dp))
+                OutlinedButton(
+                    onClick = { showEndPicker = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("${stringResource(R.string.add_med_end_date)}: ${state.endDate!!.format(DATE_FMT)}")
+                }
             }
         }
 
@@ -615,6 +644,16 @@ private fun TreatmentWindowSection(state: MedicationFormState, vm: MedicationFor
                 onPick = { d ->
                     vm.update { it.copy(endDate = d) }
                     showEndPicker = false
+                }
+            )
+        }
+        if (showSingleDayPicker) {
+            DatePickerSimple(
+                initial = state.startDate,
+                onDismiss = { showSingleDayPicker = false },
+                onPick = { d ->
+                    vm.setSingleDayDate(d)
+                    showSingleDayPicker = false
                 }
             )
         }

@@ -138,6 +138,7 @@ private class FakeMedicationRepository(
     override suspend fun softDelete(id: Long) = nyi()
     override suspend fun adjustStock(id: Long, amount: Float): StockAdjustResult = nyi()
     override suspend fun addStock(id: Long, amount: Float) = nyi()
+    override suspend fun setStock(id: Long, amount: Float) = nyi()
     override suspend fun markLowStockNotified(id: Long) = nyi()
     override fun observeSchedules(medicationId: Long) = nyi()
     override suspend fun addSchedule(schedule: Schedule) = nyi()

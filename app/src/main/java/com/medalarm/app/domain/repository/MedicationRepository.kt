@@ -30,6 +30,10 @@ interface MedicationRepository {
      *  low-stock-notified flag so a future drop re-notifies. */
     suspend fun addStock(id: Long, amount: Float)
 
+    /** Sets stock to an exact [amount] (manual correction). Clears the
+     *  low-stock-notified flag when the new value is above the threshold. */
+    suspend fun setStock(id: Long, amount: Float)
+
     suspend fun markLowStockNotified(id: Long)
 
     fun observeSchedules(medicationId: Long): Flow<List<Schedule>>
