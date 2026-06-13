@@ -8,6 +8,9 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta13
+- Kırpma ekranındaki **onayla (✓), döndür ve iptal** düğmeleri görünmüyordu; artık üst çubukta görünüyor, böylece kırpmayı tamamlayıp ekrandan çıkabilirsin.
+
 ## v0.1.0-beta12
 - İlaç fotoğrafı eklerken artık **kırpma ekranı** geliyor: kamerayla çektiğin ya da galeriden seçtiğin fotoğrafı yakınlaştırıp, kaydırıp, döndürerek sadece ilaç kutusunu çerçeveleyebilirsin.
 

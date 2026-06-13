@@ -89,6 +89,17 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <!--
+            Image cropper activity (CanHub/vanniktech). Its Confirm/rotate/Cancel
+            controls live in the action bar menu; our app theme is NoActionBar, so
+            override the crop activity's theme with one that HAS an action bar, or
+            the user can't confirm or leave the crop screen.
+        -->
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.MedAlarm.Crop"
+            tools:replace="android:theme" />
+
         <!-- Alarm + boot/time-change broadcast receivers. -->
         <!--
             Receivers — concrete classes live in data/alarm/.
