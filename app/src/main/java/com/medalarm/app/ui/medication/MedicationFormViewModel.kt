@@ -188,12 +188,18 @@ class MedicationFormViewModel @Inject constructor(
     fun newCameraCaptureUri(): Uri =
         photoStore.newCameraCaptureUri().also { pendingCameraUri = it }
 
-    /** Camera returned: import the parked capture on success, then clear it. */
-    fun onCameraCaptured(success: Boolean) {
+    /**
+     * Camera returned: hand the parked capture Uri back to the caller (to route
+     * through the crop step) on success, then clear it. Returns null on failure.
+     */
+    fun consumeCameraCapture(success: Boolean): Uri? {
         val uri = pendingCameraUri
         pendingCameraUri = null
-        if (success && uri != null) setPhoto(uri)
+        return if (success) uri else null
     }
+
+    /** The crop screen returned an error — surface it like an import failure. */
+    fun onPhotoCropFailed() = _state.update { it.copy(photoImportFailed = true) }
 
     /** Imports a gallery pick or camera capture into internal storage. */
     fun setPhoto(uri: Uri) {

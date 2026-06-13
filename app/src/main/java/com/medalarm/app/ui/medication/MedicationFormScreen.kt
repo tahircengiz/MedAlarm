@@ -6,6 +6,8 @@
 package com.medalarm.app.ui.medication
 
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -67,6 +69,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.canhub.cropper.CropImageContract
+import com.canhub.cropper.CropImageContractOptions
+import com.canhub.cropper.CropImageOptions
+import com.canhub.cropper.CropImageView
 import com.medalarm.app.R
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.domain.model.MealRelation
@@ -233,17 +239,42 @@ private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
     }
 
+    // Crop step: camera capture and gallery pick both feed their Uri into the
+    // cropper, and only the cropped result is imported. Lets the user frame just
+    // the box / label — easier to recognize at a glance.
+    val cropImage = rememberLauncherForActivityResult(CropImageContract()) { result ->
+        if (result.isSuccessful) {
+            result.uriContent?.let { vm.setPhoto(it) }
+        } else if (result.error != null) {
+            vm.onPhotoCropFailed()
+        }
+        // Plain cancel (error == null, no uri): leave the current photo untouched.
+    }
+
+    fun launchCrop(source: Uri) {
+        cropImage.launch(
+            CropImageContractOptions(
+                uri = source,
+                cropImageOptions = CropImageOptions(
+                    guidelines = CropImageView.Guidelines.ON,
+                    outputCompressFormat = Bitmap.CompressFormat.JPEG,
+                    outputCompressQuality = 90
+                )
+            )
+        )
+    }
+
     // The capture target lives in the ViewModel (SavedStateHandle), so it survives
     // the activity/process being recreated while the camera app is foregrounded.
     val takePicture = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        vm.onCameraCaptured(success)
+        vm.consumeCameraCapture(success)?.let { launchCrop(it) }
     }
     val pickFromGallery = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        uri?.let { vm.setPhoto(it) }
+        uri?.let { launchCrop(it) }
     }
 
     Column {

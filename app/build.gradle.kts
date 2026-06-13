@@ -49,8 +49,8 @@ android {
         //   versionCode is monotonically increasing — bump for every CI-released build
         //   The CI release process bumps versionCode automatically; do not edit
         //   versionCode manually except for major resets at a final release.
-        versionCode = 12
-        versionName = "0.1.0-beta11"
+        versionCode = 13
+        versionName = "0.1.0-beta12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -201,6 +201,9 @@ dependencies {
 
     // Logging — debug-only sink (no cloud)
     implementation(libs.timber)
+
+    // Image cropping for medication box photos (offline, Apache-2.0)
+    implementation(libs.android.image.cropper)
 
     // Unit tests
     testImplementation(libs.junit.jupiter)
