@@ -1,7 +1,7 @@
 # MedAlarm
 
-> Açık kaynaklı, %100 offline, reklamsız bir ilaç hatırlatma uygulaması.
-> _An open-source, 100% offline, ad-free medication reminder app._
+> Herkesin ücretsiz kullanabilmesi için yapılmış; açık kaynaklı, %100 offline, reklamsız bir ilaç hatırlatma uygulaması.
+> _A free-for-everyone, open-source, 100% offline, ad-free medication reminder app._
 
 **Android · Kotlin · Jetpack Compose · Room**
 
@@ -27,11 +27,20 @@ En güncel sürümü ve önceki tüm sürümleri buradan bulabilirsiniz:
 
 ## 🇹🇷 Türkçe
 
-### Vizyon
+### Neden var?
 
-MedAlarm bir **sosyal sorumluluk projesidir**. İnsanların ilaçlarını
-zamanında almasına yardımcı olmak için yazılmıştır. Hiçbir ticari amacı,
-kullanıcıdan veri toplama hedefi veya kâr beklentisi yoktur.
+MedAlarm bir **sosyal sorumluluk projesidir** — kâr amacı gütmeden, herkesin
+ücretsiz kullanabilmesi için yapıldı. Tek bir amacı var: insanların ilaçlarını
+zamanında almasına yardımcı olmak. İlacını unutan, aynı anda birkaç ilaç
+kullanan, yaşlı ya da kronik hastalığı olan herkes için — karşılığında hiçbir
+ücret, abonelik veya "premium" beklentisi olmadan.
+
+- 💛 **Herkese ücretsiz** — şimdi ve her zaman. Ücretli sürüm, abonelik veya kilitli özellik yok.
+- 🤝 **Karşılık beklemeden** — reklam yok, veri toplama yok, hiçbir şey satılmıyor.
+- 🔒 **Verileriniz sizin** — her şey yalnızca telefonunuzda kalır, internet bile gerekmez.
+- 🌍 **Açık kaynak** — kod herkese açık; dileyen inceler, katkı verir, paylaşır.
+
+Faydalı bulursanız en güzel teşekkür, ihtiyacı olan birine anlatmanızdır.
 
 ### Sorumluluk Reddi
 
@@ -58,9 +67,10 @@ Bu uygulamada **hiçbir zaman** şunlar olmayacak:
 Uygulamanın işlevini yerine getirmesi için **internet bağlantısı asla
 gerekmeyecek**. Verileriniz cihazınızdan dışarı çıkmaz.
 
-### MVP Özellikleri
+### Özellikler
 
 - ✅ İlaç ekleme/düzenleme/silme — ad, doz, ölçü birimi (tablet/ml/mg/damla/sprey/saşe), not, renk
+- ✅ Düzenli veya **tek seferlik** ilaç girişi (ekleme sırasında sorulur)
 - ✅ Esnek programlama:
   - Günde belirli saatlerde (örn. 08:00, 14:00, 20:00)
   - X saatte bir
@@ -99,11 +109,20 @@ APK'yı yukarıdaki [İndir / Download](#-i̇ndir--download) bölümünden alabi
 
 ## 🇬🇧 English
 
-### Vision
+### Why it exists
 
-MedAlarm is a **social responsibility project**. It exists to help
-people take their medication on time. It has no commercial purpose,
-no data collection goals, and no profit motive.
+MedAlarm is a **social responsibility project** — built with no profit motive,
+so that anyone can use it free of charge. Its only goal is to help people take
+their medication on time: for anyone who forgets a dose, juggles several
+medicines, or lives with a chronic condition — with no fee, subscription, or
+"premium" tier expected in return.
+
+- 💛 **Free for everyone** — now and always. No paid version, subscription, or locked features.
+- 🤝 **Nothing expected in return** — no ads, no data collection, nothing sold.
+- 🔒 **Your data stays yours** — everything lives only on your phone; no internet required.
+- 🌍 **Open source** — the code is public for anyone to inspect, contribute to, or share.
+
+If it helps you, the best thank-you is telling someone who needs it.
 
 ### Disclaimer
 
@@ -130,7 +149,7 @@ This app will **never** include:
 The app will **never require an internet connection** to function.
 Your data does not leave your device.
 
-### MVP Features
+### Features
 
 See the Turkish section above; the feature set is identical.
 
