@@ -123,6 +123,8 @@ private class FakeDoseLogRepo(private var stored: DoseLog) : DoseLogRepository {
     override suspend fun markOverdueAsMissed(threshold: Instant) = nyi()
     override suspend fun getFuturePending(medicationId: Long, after: Instant) = nyi()
     override suspend fun deleteFuturePending(medicationId: Long, after: Instant) = nyi()
+    override suspend fun getAll() = nyi()
+    override suspend fun deleteByIds(ids: List<Long>) = nyi()
     private fun nyi(): Nothing = throw NotImplementedError()
 }
 

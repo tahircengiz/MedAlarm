@@ -72,4 +72,10 @@ internal class DoseLogRepositoryImpl(
     override suspend fun deleteFuturePending(medicationId: Long, after: Instant) {
         dao.deleteFuturePending(medicationId, after.toEpochMilli())
     }
+
+    override suspend fun getAll(): List<DoseLog> = dao.getAll().map { it.toDomain() }
+
+    override suspend fun deleteByIds(ids: List<Long>) {
+        if (ids.isNotEmpty()) dao.deleteByIds(ids)
+    }
 }

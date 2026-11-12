@@ -42,4 +42,10 @@ interface DoseLogRepository {
 
     /** Deletes future PENDING doses for a medication. Caller cancels their alarms first. */
     suspend fun deleteFuturePending(medicationId: Long, after: Instant)
+
+    /** Every dose row, for the one-time de-dup heal. */
+    suspend fun getAll(): List<DoseLog>
+
+    /** Deletes dose rows by id (used by the de-dup heal). */
+    suspend fun deleteByIds(ids: List<Long>)
 }

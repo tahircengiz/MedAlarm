@@ -128,4 +128,12 @@ interface DoseLogDao {
         WHERE medicationId = :medId AND status = 'PENDING' AND scheduledAt > :after
     """)
     suspend fun deleteFuturePending(medId: Long, after: Long)
+
+    /** Every dose row — used by the one-time de-dup heal to collapse duplicate slots
+     *  created by the pre-fix resurrection bug. */
+    @Query("SELECT * FROM dose_logs")
+    suspend fun getAll(): List<DoseLogEntity>
+
+    @Query("DELETE FROM dose_logs WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }
