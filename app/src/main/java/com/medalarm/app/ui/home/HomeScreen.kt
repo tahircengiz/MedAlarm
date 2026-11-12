@@ -5,16 +5,20 @@
 
 package com.medalarm.app.ui.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -75,7 +79,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -95,6 +98,7 @@ import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.SwipeAction
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.MedicationPhotoBox
+import com.medalarm.app.ui.common.dosageText
 import com.medalarm.app.ui.common.resolveMedicationColor
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -156,11 +160,7 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        stringResource(R.string.app_name),
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                    Text(stringResource(R.string.app_name))
                 },
                 actions = {
                     IconButton(onClick = onOpenStock) {
@@ -295,14 +295,7 @@ private fun EmptyState(onAdd: () -> Unit) {
                 modifier = Modifier
                     .size(112.dp)
                     .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            listOf(
-                                MaterialTheme.colorScheme.primaryContainer,
-                                MaterialTheme.colorScheme.tertiaryContainer
-                            )
-                        )
-                    )
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
                 Icon(
                     Icons.Outlined.Medication,
@@ -361,21 +354,14 @@ private fun DayHeader(
 
     Surface(
         shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.22f)),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column(
-            modifier = Modifier
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            MaterialTheme.colorScheme.primaryContainer,
-                            MaterialTheme.colorScheme.tertiaryContainer
-                        )
-                    )
-                )
-                .padding(horizontal = 12.dp, vertical = 12.dp)
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -385,7 +371,7 @@ private fun DayHeader(
                     Icon(
                         Icons.Outlined.ChevronLeft,
                         contentDescription = stringResource(R.string.home_prev_day),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 Column(
@@ -395,14 +381,13 @@ private fun DayHeader(
                     Text(
                         label,
                         style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     if (!isToday) {
                         Text(
                             selectedDate.format(DATE_FMT_LONG),
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         TextButton(onClick = onJumpToday) {
                             Text(stringResource(R.string.home_jump_today))
@@ -413,7 +398,7 @@ private fun DayHeader(
                     Icon(
                         Icons.Outlined.ChevronRight,
                         contentDescription = stringResource(R.string.home_next_day),
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -427,8 +412,7 @@ private fun DayHeader(
                         stringResource(R.string.home_progress, takenCount, totalCount)
                     },
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 8.dp)
                 )
                 Spacer(Modifier.height(8.dp))
@@ -458,6 +442,8 @@ private fun DoseList(
     onOpenMedication: (Long) -> Unit
 ) {
     val byId = remember(medications) { medications.associateBy { it.id } }
+    // The next dose still awaiting action — the single "you are here" point on the day's rail.
+    val nextDueId = remember(doses) { doses.firstOrNull { it.status == DoseStatus.PENDING }?.id }
 
     if (doses.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize().padding(32.dp), contentAlignment = Alignment.Center) {
@@ -479,6 +465,7 @@ private fun DoseList(
                     SwipeableDoseCard(
                         dose = dose,
                         medication = med,
+                        isNextDue = dose.id == nextDueId,
                         swipeRightAction = swipeRightAction,
                         swipeLeftAction = swipeLeftAction,
                         onSwipeAction = onSwipeAction,
@@ -500,6 +487,7 @@ private fun DoseList(
 private fun SwipeableDoseCard(
     dose: DoseLog,
     medication: Medication,
+    isNextDue: Boolean,
     swipeRightAction: SwipeAction,
     swipeLeftAction: SwipeAction,
     onSwipeAction: (DoseLog, Medication, SwipeAction) -> Unit,
@@ -511,7 +499,7 @@ private fun SwipeableDoseCard(
     val leftEnabled = actionable && swipeLeftAction != SwipeAction.NONE
 
     if (!rightEnabled && !leftEnabled) {
-        DoseCard(dose, medication, onClick, onLongClick)
+        DoseCard(dose, medication, isNextDue, onClick, onLongClick)
         return
     }
 
@@ -547,7 +535,7 @@ private fun SwipeableDoseCard(
                 }
             }
         ) {
-            DoseCard(dose, medication, onClick, onLongClick)
+            DoseCard(dose, medication, isNextDue, onClick, onLongClick)
         }
     }
 }
@@ -575,7 +563,7 @@ private fun SwipeActionBackground(action: SwipeAction, alignment: Alignment) {
                 label,
                 color = Color.White,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Medium
             )
         }
     }
@@ -585,57 +573,65 @@ private fun SwipeActionBackground(action: SwipeAction, alignment: Alignment) {
 private fun DoseCard(
     dose: DoseLog,
     medication: Medication,
+    isNextDue: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
     val accent = resolveMedicationColor(medication.colorHex)
-    val containerColor = when (dose.status) {
-        DoseStatus.TAKEN -> MaterialTheme.colorScheme.primaryContainer
-        DoseStatus.MISSED -> MaterialTheme.colorScheme.errorContainer
-        DoseStatus.SKIPPED -> MaterialTheme.colorScheme.surfaceVariant
-        DoseStatus.SNOOZED -> MaterialTheme.colorScheme.tertiaryContainer
-        DoseStatus.PENDING -> accent.copy(alpha = 0.10f)
-    }
 
     Card(
         // tap = action dialog, long-press = open medication detail.
-        shape = RoundedCornerShape(20.dp),
+        // Quiet neutral surface + hairline; the next-due row gets a teal hairline,
+        // so status reads from the rail dot and chip, not from a tinted background.
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(onClick = onClick, onLongClick = onLongClick),
-        colors = CardDefaults.cardColors(containerColor = containerColor)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(
+            1.dp,
+            if (isNextDue) MaterialTheme.colorScheme.primary.copy(alpha = 0.45f)
+            else MaterialTheme.colorScheme.outline.copy(alpha = 0.20f)
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .height(IntrinsicSize.Min)
+                .padding(start = 12.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Signature: each dose sits on the day's quiet time rail. The next dose
+            // still due is the one filled teal point — "you are here".
+            DoseRail(status = dose.status, isNextDue = isNextDue)
+            Spacer(Modifier.width(10.dp))
+
             // Box photo when available (far easier to recognize than color alone),
             // otherwise the accent-tinted medication avatar.
-            val photo = rememberMedicationPhoto(medication.photoPath, displaySize = 52.dp)
+            val photo = rememberMedicationPhoto(medication.photoPath, displaySize = 48.dp)
             if (photo != null) {
                 Image(
                     bitmap = photo,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .size(52.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
                 )
             } else {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .size(52.dp)
+                        .size(48.dp)
                         .clip(CircleShape)
-                        .background(accent.copy(alpha = 0.22f))
+                        .background(accent.copy(alpha = 0.18f))
                 ) {
                     Icon(
                         Icons.Outlined.Medication,
                         contentDescription = null,
                         tint = accent,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }
@@ -644,11 +640,11 @@ private fun DoseCard(
                 Text(
                     medication.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = formatDose(medication),
+                    text = medication.dosageText(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -658,9 +654,12 @@ private fun DoseCard(
                 Text(
                     formatTime(dose),
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = if (dose.status == DoseStatus.PENDING) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant
+                    fontWeight = FontWeight.Medium,
+                    color = when {
+                        isNextDue -> MaterialTheme.colorScheme.primary
+                        dose.status == DoseStatus.PENDING -> MaterialTheme.colorScheme.onSurface
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
+                    }
                 )
                 if (dose.status != DoseStatus.PENDING) {
                     Spacer(Modifier.height(4.dp))
@@ -671,51 +670,106 @@ private fun DoseCard(
     }
 }
 
-/** Status as icon + word — text labels are far clearer than icon-only for elderly users. */
+/**
+ * One point on the day's dose rail: a hairline vertical line with a status dot.
+ * The next-due dose is the emphasized filled teal point; past doses are filled in
+ * their status color, doses still ahead are quiet outline dots.
+ */
+@Composable
+private fun DoseRail(status: DoseStatus, isNextDue: Boolean) {
+    val dotColor = when {
+        isNextDue -> MaterialTheme.colorScheme.primary
+        status == DoseStatus.TAKEN -> MaterialTheme.colorScheme.primary
+        status == DoseStatus.MISSED -> MaterialTheme.colorScheme.error
+        status == DoseStatus.SNOOZED -> MaterialTheme.colorScheme.tertiary
+        status == DoseStatus.SKIPPED -> MaterialTheme.colorScheme.outline
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    val filled = isNextDue || status != DoseStatus.PENDING
+    Box(
+        modifier = Modifier
+            .width(16.dp)
+            .fillMaxHeight(),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .width(2.dp)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.30f))
+        )
+        when {
+            isNextDue -> Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .clip(CircleShape)
+                    .background(dotColor.copy(alpha = 0.22f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    Modifier
+                        .size(10.dp)
+                        .clip(CircleShape)
+                        .background(dotColor)
+                )
+            }
+            filled -> Box(
+                Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(dotColor)
+            )
+            else -> Box(
+                Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(1.5.dp, dotColor, CircleShape)
+            )
+        }
+    }
+}
+
+/** Status as a quiet tonal chip: icon + word. Text labels are far clearer than icon-only for elderly users. */
 @Composable
 private fun StatusChip(status: DoseStatus) {
-    data class ChipStyle(val container: Color, val content: Color, val icon: ImageVector, val label: String)
+    data class ChipStyle(val color: Color, val icon: ImageVector, val label: String)
 
     val style = when (status) {
         DoseStatus.TAKEN -> ChipStyle(
             MaterialTheme.colorScheme.primary,
-            MaterialTheme.colorScheme.onPrimary,
             Icons.Outlined.CheckCircle,
             stringResource(R.string.history_status_taken)
         )
         DoseStatus.MISSED -> ChipStyle(
             MaterialTheme.colorScheme.error,
-            MaterialTheme.colorScheme.onError,
             Icons.Outlined.Warning,
             stringResource(R.string.history_status_missed)
         )
         DoseStatus.SKIPPED -> ChipStyle(
-            MaterialTheme.colorScheme.outline,
-            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.onSurfaceVariant,
             Icons.Outlined.RemoveCircle,
             stringResource(R.string.history_status_skipped)
         )
         DoseStatus.SNOOZED -> ChipStyle(
             MaterialTheme.colorScheme.tertiary,
-            MaterialTheme.colorScheme.onTertiary,
             Icons.Outlined.HourglassEmpty,
             stringResource(R.string.history_status_snoozed)
         )
         DoseStatus.PENDING -> ChipStyle(
-            MaterialTheme.colorScheme.surfaceVariant,
             MaterialTheme.colorScheme.onSurfaceVariant,
             Icons.Outlined.Schedule,
             stringResource(R.string.history_status_pending)
         )
     }
-    Surface(shape = RoundedCornerShape(50), color = style.container) {
+    Surface(shape = RoundedCornerShape(8.dp), color = style.color.copy(alpha = 0.14f)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         ) {
-            Icon(style.icon, contentDescription = null, tint = style.content, modifier = Modifier.size(16.dp))
+            Icon(style.icon, contentDescription = null, tint = style.color, modifier = Modifier.size(14.dp))
             Spacer(Modifier.width(4.dp))
-            Text(style.label, color = style.content, style = MaterialTheme.typography.labelLarge)
+            Text(style.label, color = style.color, style = MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -744,7 +798,7 @@ private fun DoseActionDialog(
                     Spacer(Modifier.height(12.dp))
                 }
                 Text(
-                    "${formatTime(dose)} · ${formatDose(medication)}",
+                    "${formatTime(dose)} · ${medication.dosageText()}",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -810,9 +864,3 @@ private val DATE_FMT_LONG: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate
 
 private fun formatTime(dose: DoseLog): String =
     dose.scheduledAt.atZone(ZoneId.systemDefault()).toLocalTime().format(TIME_FMT)
-
-private fun formatDose(med: Medication): String {
-    val amount = if (med.dosageAmount % 1f == 0f) med.dosageAmount.toInt().toString()
-    else med.dosageAmount.toString()
-    return "$amount ${med.unit.name.lowercase()}"
-}

@@ -74,6 +74,7 @@ import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import com.medalarm.app.R
+import com.medalarm.app.ui.common.localizedLabel
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.MedicationUnit
@@ -84,6 +85,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -157,7 +159,7 @@ private fun SectionLabel(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
@@ -355,26 +357,6 @@ private fun PhotoSection(state: MedicationFormState, vm: MedicationFormViewModel
 }
 
 @Composable
-private fun MedicationUnit.localizedLabel(): String = when (this) {
-    MedicationUnit.TABLET -> stringResource(R.string.unit_tablet)
-    MedicationUnit.CAPSULE -> stringResource(R.string.unit_capsule)
-    MedicationUnit.ML -> stringResource(R.string.unit_ml)
-    MedicationUnit.MG -> stringResource(R.string.unit_mg)
-    MedicationUnit.DROP -> stringResource(R.string.unit_drop)
-    MedicationUnit.PUFF -> stringResource(R.string.unit_puff)
-    MedicationUnit.SACHET -> stringResource(R.string.unit_sachet)
-    MedicationUnit.OTHER -> stringResource(R.string.unit_other)
-}
-
-@Composable
-private fun MealRelation.localizedLabel(): String = when (this) {
-    MealRelation.NONE -> stringResource(R.string.meal_none)
-    MealRelation.BEFORE -> stringResource(R.string.meal_before)
-    MealRelation.AFTER -> stringResource(R.string.meal_after)
-    MealRelation.WITH -> stringResource(R.string.meal_with)
-}
-
-@Composable
 private fun ScheduleSection(state: MedicationFormState, vm: MedicationFormViewModel) {
     // Which schedule block the time picker is currently adding to (null = closed).
     var timePickerForIndex by remember { mutableStateOf<Int?>(null) }
@@ -430,7 +412,7 @@ private fun ScheduleBlock(
                 Text(
                     stringResource(R.string.add_med_schedule_n, index + 1),
                     style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f)
                 )
                 if (canRemove) {
@@ -803,4 +785,4 @@ private fun NotesSection(state: MedicationFormState, vm: MedicationFormViewModel
 }
 
 private val TIME_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-private val DATE_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+private val DATE_FMT: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)

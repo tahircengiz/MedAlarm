@@ -25,9 +25,10 @@ internal val OnErrorLight = Color(0xFFFFFFFF)
 internal val ErrorContainerLight = Color(0xFFFFDAD6)
 internal val OnErrorContainerLight = Color(0xFF410002)
 
-internal val BackgroundLight = Color(0xFFFAFDFC)
+// Warm paper-white, not a cool clinical white — the medicine-box-and-bedside world.
+internal val BackgroundLight = Color(0xFFFBFAF7)
 internal val OnBackgroundLight = Color(0xFF191C1C)
-internal val SurfaceLight = Color(0xFFFAFDFC)
+internal val SurfaceLight = Color(0xFFFBFAF7)
 internal val OnSurfaceLight = Color(0xFF191C1C)
 internal val SurfaceVariantLight = Color(0xFFDAE4E5)
 internal val OnSurfaceVariantLight = Color(0xFF3F4849)

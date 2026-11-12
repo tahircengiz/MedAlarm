@@ -233,6 +233,8 @@
     <string name="settings_snooze_minutes">Snooze duration (minutes)</string>
     <string name="settings_snooze_count">Max snooze count</string>
     <string name="settings_snooze_unlimited">Unlimited</string>
+    <!-- %1$d = minutes -->
+    <string name="settings_value_minutes">%1$d min</string>
     <string name="settings_vibration">Vibrate on alarm</string>
     <string name="settings_tts">Speak medication name aloud</string>
     <string name="settings_low_stock_default">Default low-stock threshold</string>

@@ -111,7 +111,7 @@ fun OnboardingScreen(
                     )
                     3 -> ThemeStep(
                         currentTheme = settings?.themeMode ?: ThemeMode.SYSTEM,
-                        useDynamicColor = settings?.useDynamicColor ?: true,
+                        useDynamicColor = settings?.useDynamicColor ?: false,
                         onThemeSelect = viewModel::setTheme,
                         onDynamicColorChange = viewModel::setDynamicColor
                     )

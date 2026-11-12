@@ -116,7 +116,7 @@ private fun SectionHeader(title: String, icon: ImageVector? = null) {
             Icon(
                 icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(Modifier.width(8.dp))
@@ -124,7 +124,7 @@ private fun SectionHeader(title: String, icon: ImageVector? = null) {
         Text(
             title,
             style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -266,7 +266,7 @@ private fun RemindersSection(s: UserSettings, vm: SettingsViewModel) {
             value = s.defaultSnoozeMinutes.toFloat(),
             range = 5f..60f,
             steps = 10,
-            valueLabel = "${s.defaultSnoozeMinutes} min",
+            valueLabel = stringResource(R.string.settings_value_minutes, s.defaultSnoozeMinutes),
             onChange = { vm.setSnoozeMinutes(it.toInt()) }
         )
 
@@ -473,7 +473,7 @@ private fun NavigationRow(
                 Icon(
                     leadingIcon,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(22.dp)
                 )
                 Spacer(Modifier.width(16.dp))
