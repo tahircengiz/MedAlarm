@@ -110,7 +110,7 @@
     <string name="home_yesterday">Dün</string>
     <string name="home_prev_day">Önceki gün</string>
     <string name="home_next_day">Sonraki gün</string>
-    <string name="home_jump_today">Bugün</string>
+    <string name="home_jump_today">Bugüne dön</string>
     <string name="home_progress">%1$d / %2$d doz alındı</string>
     <string name="home_progress_done">Tüm dozlar alındı — harika!</string>
     <string name="home_swipe_taken_msg">%1$s alındı olarak işaretlendi</string>

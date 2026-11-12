@@ -136,7 +136,7 @@
     <string name="home_yesterday">Yesterday</string>
     <string name="home_prev_day">Previous day</string>
     <string name="home_next_day">Next day</string>
-    <string name="home_jump_today">Today</string>
+    <string name="home_jump_today">Back to today</string>
     <!-- %1$d = taken, %2$d = total scheduled for the day -->
     <string name="home_progress">%1$d of %2$d doses taken</string>
     <string name="home_progress_done">All doses taken — well done!</string>
