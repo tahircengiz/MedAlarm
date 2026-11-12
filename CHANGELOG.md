@@ -8,6 +8,11 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta16
+- **Daha sakin, daha okunur arayüz:** Ana ekran, ilaç detayı ve ayarlar yeni bir sakin teal tasarıma geçti; kutu fotoğrafın ve günün doz sırası öne çıkıyor, gereksiz renk ve vurgu azaldı. Dilersen Ayarlar'dan telefonun duvar kağıdı renklerini de açabilirsin.
+- **Atlanan doz artık geri gelmiyor:** Bir dozu "atla" ya da "aldım" dediğinde kalıcı oluyor. Önceden bu dozlar bir süre sonra tekrar "bekliyor" durumuna dönüp alarmı yeniden çalabiliyordu — düzeltildi.
+- **Eski tekrar eden dozlar temizleniyor:** Önceki sürümden kalan, aynı saate birden çok kez eklenmiş dozlar bu güncellemenin ardından otomatik olarak ayıklanıyor; "aldım/atladım" kayıtların korunuyor.
+
 ## v0.1.0-beta15
 - **İlaç ekleme artık önce soruyor:** "İlaç ekle"ye dokununca ilacın **düzenli mi yoksa tek seferlik mi** kullanılacağını seçiyorsun.
   - Düzenli: alışılmış tam form (program, tedavi süresi, stok…).
