@@ -116,6 +116,7 @@ private class FakeDoseLogRepo(private var stored: DoseLog) : DoseLogRepository {
     override suspend fun insertAll(logs: List<DoseLog>) = nyi()
     override suspend fun findOverduePending(now: Instant) = nyi()
     override suspend fun findNextPending(medicationId: Long, scheduleId: Long, after: Instant) = nyi()
+    override suspend fun findAtSlot(medicationId: Long, scheduleId: Long, scheduledAt: Instant) = nyi()
     override suspend fun markTaken(id: Long, at: Instant) = nyi()
     override suspend fun markSkipped(id: Long, at: Instant) = nyi()
     override suspend fun revertToPending(id: Long) = nyi()

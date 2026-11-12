@@ -44,6 +44,9 @@ internal class DoseLogRepositoryImpl(
     override suspend fun findNextPending(medicationId: Long, scheduleId: Long, after: Instant): DoseLog? =
         dao.findNextPending(medicationId, scheduleId, after.toEpochMilli())?.toDomain()
 
+    override suspend fun findAtSlot(medicationId: Long, scheduleId: Long, scheduledAt: Instant): DoseLog? =
+        dao.findAtSlot(medicationId, scheduleId, scheduledAt.toEpochMilli())?.toDomain()
+
     override suspend fun markTaken(id: Long, at: Instant) {
         dao.updateStatus(id, DoseStatus.TAKEN, at.toEpochMilli())
     }

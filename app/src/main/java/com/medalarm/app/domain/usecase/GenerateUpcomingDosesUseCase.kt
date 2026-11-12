@@ -99,13 +99,17 @@ class GenerateUpcomingDosesUseCase @Inject constructor(
             if (!next.isBefore(windowEnd)) return
             if (medEndExclusive != null && !next.isBefore(medEndExclusive)) return
 
-            // Dedup: is there already a PENDING at this exact scheduledAt?
-            val existing = doseLogRepository.findNextPending(
+            // Dedup: is there already ANY dose at this exact scheduledAt — not just
+            // a PENDING one? A status-scoped check would miss a dose the user has
+            // already SKIPPED/TAKEN/SNOOZED and re-insert a fresh PENDING at the
+            // same slot, resurrecting it (and re-arming its alarm) on every
+            // generation pass. Checking any status keeps the user's action sticky.
+            val existing = doseLogRepository.findAtSlot(
                 medicationId = medication.id,
                 scheduleId = schedule.id,
-                after = next.minusMillis(1L)
+                scheduledAt = next
             )
-            if (existing == null || existing.scheduledAt != next) {
+            if (existing == null) {
                 doseLogRepository.insert(
                     DoseLog(
                         medicationId = medication.id,
