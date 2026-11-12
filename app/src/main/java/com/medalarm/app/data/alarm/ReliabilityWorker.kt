@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.medalarm.app.domain.repository.DoseLogRepository
+import com.medalarm.app.domain.usecase.DedupeDoseLogsUseCase
 import com.medalarm.app.domain.usecase.RescheduleAllActiveUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -31,16 +32,20 @@ class ReliabilityWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted params: WorkerParameters,
     private val rescheduleAllActiveUseCase: RescheduleAllActiveUseCase,
+    private val dedupeDoseLogsUseCase: DedupeDoseLogsUseCase,
     private val doseLogRepository: DoseLogRepository
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result = try {
         val now = Instant.now()
+        // Heal any duplicate slots left by the old resurrection bug before we
+        // re-arm alarms, so the reschedule works from a clean, deduped table.
+        val removed = dedupeDoseLogsUseCase()
         rescheduleAllActiveUseCase(now = now)
         val flipped = doseLogRepository.markOverdueAsMissed(
             threshold = now.minus(OVERDUE_HOURS, ChronoUnit.HOURS)
         )
-        Timber.d("ReliabilityWorker: re-armed active meds, marked $flipped overdue as MISSED")
+        Timber.d("ReliabilityWorker: removed $removed duplicate doses, re-armed active meds, marked $flipped overdue as MISSED")
         Result.success()
     } catch (t: Throwable) {
         Timber.e(t, "ReliabilityWorker failed")

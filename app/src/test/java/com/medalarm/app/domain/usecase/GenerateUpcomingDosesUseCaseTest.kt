@@ -89,6 +89,28 @@ class GenerateUpcomingDosesUseCaseTest {
     }
 
     @Test
+    fun `a skipped future dose is not resurrected on the next generation`() = runTest {
+        val medRepo = FakeMedicationRepository(medication(), listOf(dailySchedule()))
+        val doseRepo = FakeDoseLogRepository()
+        val useCase = GenerateUpcomingDosesUseCase(medRepo, doseRepo, ScheduleCalculator(), FakeAlarmRegistrar())
+
+        useCase(medicationId = 1, windowDays = 2, now = now)
+
+        // User skips a future dose (16th 08:00).
+        val skippedAt = Instant.parse("2025-01-16T08:00:00Z")
+        val target = doseRepo.store.first { it.scheduledAt == skippedAt }
+        doseRepo.markSkipped(target.id, now)
+
+        // A later alarm fire / boot / reschedule re-runs generation (additive).
+        useCase(medicationId = 1, windowDays = 2, now = now)
+
+        // The slot must hold exactly one row, still SKIPPED — not a fresh PENDING.
+        val atSlot = doseRepo.store.filter { it.scheduledAt == skippedAt }
+        assertThat(atSlot).hasSize(1)
+        assertThat(atSlot.single().status).isEqualTo(DoseStatus.SKIPPED)
+    }
+
+    @Test
     fun `resetFuture cancels and rebuilds future pending`() = runTest {
         val medRepo = FakeMedicationRepository(medication(), listOf(dailySchedule()))
         val doseRepo = FakeDoseLogRepository()
@@ -164,6 +186,17 @@ private class FakeDoseLogRepository : DoseLogRepository {
                 it.status == DoseStatus.PENDING && it.scheduledAt.isAfter(after)
         }.minByOrNull { it.scheduledAt }
 
+    override suspend fun findAtSlot(medicationId: Long, scheduleId: Long, scheduledAt: Instant): DoseLog? =
+        store.firstOrNull {
+            it.medicationId == medicationId && it.scheduleId == scheduleId &&
+                it.scheduledAt == scheduledAt
+        }
+
+    override suspend fun markSkipped(id: Long, at: Instant) {
+        val idx = store.indexOfFirst { it.id == id }
+        if (idx >= 0) store[idx] = store[idx].copy(status = DoseStatus.SKIPPED, actionAt = at)
+    }
+
     override suspend fun getFuturePending(medicationId: Long, after: Instant): List<DoseLog> =
         store.filter {
             it.medicationId == medicationId && it.status == DoseStatus.PENDING &&
@@ -185,9 +218,10 @@ private class FakeDoseLogRepository : DoseLogRepository {
     override suspend fun insertAll(logs: List<DoseLog>) = nyi()
     override suspend fun findOverduePending(now: Instant) = nyi()
     override suspend fun markTaken(id: Long, at: Instant) = nyi()
-    override suspend fun markSkipped(id: Long, at: Instant) = nyi()
     override suspend fun snooze(id: Long, until: Instant, at: Instant) = nyi()
     override suspend fun revertToPending(id: Long) = nyi()
     override suspend fun markOverdueAsMissed(threshold: Instant) = nyi()
+    override suspend fun getAll() = nyi()
+    override suspend fun deleteByIds(ids: List<Long>) = nyi()
     private fun nyi(): Nothing = throw NotImplementedError("not used in test")
 }

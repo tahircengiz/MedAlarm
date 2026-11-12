@@ -44,6 +44,9 @@ internal class DoseLogRepositoryImpl(
     override suspend fun findNextPending(medicationId: Long, scheduleId: Long, after: Instant): DoseLog? =
         dao.findNextPending(medicationId, scheduleId, after.toEpochMilli())?.toDomain()
 
+    override suspend fun findAtSlot(medicationId: Long, scheduleId: Long, scheduledAt: Instant): DoseLog? =
+        dao.findAtSlot(medicationId, scheduleId, scheduledAt.toEpochMilli())?.toDomain()
+
     override suspend fun markTaken(id: Long, at: Instant) {
         dao.updateStatus(id, DoseStatus.TAKEN, at.toEpochMilli())
     }
@@ -68,5 +71,11 @@ internal class DoseLogRepositoryImpl(
 
     override suspend fun deleteFuturePending(medicationId: Long, after: Instant) {
         dao.deleteFuturePending(medicationId, after.toEpochMilli())
+    }
+
+    override suspend fun getAll(): List<DoseLog> = dao.getAll().map { it.toDomain() }
+
+    override suspend fun deleteByIds(ids: List<Long>) {
+        if (ids.isNotEmpty()) dao.deleteByIds(ids)
     }
 }

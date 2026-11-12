@@ -73,6 +73,21 @@ interface DoseLogDao {
     """)
     suspend fun findNextPending(medId: Long, scheduleId: Long, after: Long): DoseLogEntity?
 
+    /**
+     * Any dose already materialized at this exact slot, regardless of status.
+     * Used by the generator to avoid resurrecting a dose the user already acted
+     * on (SKIPPED/TAKEN/SNOOZED/MISSED) as a fresh PENDING — a status-scoped
+     * lookup like [findNextPending] can't see those and would re-insert them.
+     */
+    @Query("""
+        SELECT * FROM dose_logs
+        WHERE medicationId = :medId
+          AND scheduleId = :scheduleId
+          AND scheduledAt = :scheduledAt
+        LIMIT 1
+    """)
+    suspend fun findAtSlot(medId: Long, scheduleId: Long, scheduledAt: Long): DoseLogEntity?
+
     @Query("UPDATE dose_logs SET status = :status, actionAt = :actionAt WHERE id = :id")
     suspend fun updateStatus(id: Long, status: DoseStatus, actionAt: Long?)
 
@@ -113,4 +128,12 @@ interface DoseLogDao {
         WHERE medicationId = :medId AND status = 'PENDING' AND scheduledAt > :after
     """)
     suspend fun deleteFuturePending(medId: Long, after: Long)
+
+    /** Every dose row — used by the one-time de-dup heal to collapse duplicate slots
+     *  created by the pre-fix resurrection bug. */
+    @Query("SELECT * FROM dose_logs")
+    suspend fun getAll(): List<DoseLogEntity>
+
+    @Query("DELETE FROM dose_logs WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }

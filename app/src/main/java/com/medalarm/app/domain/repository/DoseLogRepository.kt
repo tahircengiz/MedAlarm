@@ -22,6 +22,11 @@ interface DoseLogRepository {
     suspend fun findOverduePending(now: Instant): List<DoseLog>
     suspend fun findNextPending(medicationId: Long, scheduleId: Long, after: Instant): DoseLog?
 
+    /** Any dose already materialized at this exact slot, regardless of status.
+     *  Lets the generator skip slots the user already acted on instead of
+     *  resurrecting them as a fresh PENDING. */
+    suspend fun findAtSlot(medicationId: Long, scheduleId: Long, scheduledAt: Instant): DoseLog?
+
     suspend fun markTaken(id: Long, at: Instant)
     suspend fun markSkipped(id: Long, at: Instant)
     suspend fun snooze(id: Long, until: Instant, at: Instant)
@@ -37,4 +42,10 @@ interface DoseLogRepository {
 
     /** Deletes future PENDING doses for a medication. Caller cancels their alarms first. */
     suspend fun deleteFuturePending(medicationId: Long, after: Instant)
+
+    /** Every dose row, for the one-time de-dup heal. */
+    suspend fun getAll(): List<DoseLog>
+
+    /** Deletes dose rows by id (used by the de-dup heal). */
+    suspend fun deleteByIds(ids: List<Long>)
 }
