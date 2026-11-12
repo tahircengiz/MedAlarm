@@ -8,6 +8,9 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta18
+- **Başka bir güne bakarken artık "Bugün" yazmıyor:** Ana ekranda önceki ya da sonraki bir güne geçtiğinde tarihin altında "Bugün" görünüyordu ve o gün bugünmüş gibi okunuyordu. Bu aslında bugüne dönme düğmesiydi; artık takvim simgesiyle birlikte "Bugüne dön" yazıyor. Dün ve Yarın dışındaki günlerde tarih de iki kez yazılmıyor.
+
 ## v0.1.0-beta17
 - **Programda olmayan fazladan dozlar temizleniyor:** Bazı ilaçlarda, asıl hatırlatma saatinin yanında yanlışlıkla oluşmuş ikinci bir doz (örneğin bir saat sonrasına kaymış bir kopya) kalabiliyordu. Bu güncellemenin ardından, ilacın programında karşılığı olmayan bu fazladan dozlar (geçmiş ve gelecek) tek seferde otomatik ayıklanıyor. Gerçek program saatlerindeki "aldım/atladım" kayıtların korunur; saat aralığıyla (her X saatte bir) kurulu ilaçlara dokunulmaz.
 
