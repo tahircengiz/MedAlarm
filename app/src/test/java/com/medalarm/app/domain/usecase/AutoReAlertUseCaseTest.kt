@@ -167,5 +167,7 @@ private class FakeSettings(private val fixed: UserSettings) : SettingsRepository
     override suspend fun setDisclaimerAccepted() = nyi()
     override suspend fun setOnboardingCompleted(value: Boolean) = nyi()
     override suspend fun setUserConfirmedOemAutostart(value: Boolean) = nyi()
+    override suspend fun isOrphanDosePruneDone() = nyi()
+    override suspend fun setOrphanDosePruneDone() = nyi()
     private fun nyi(): Nothing = throw NotImplementedError()
 }

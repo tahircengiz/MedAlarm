@@ -30,4 +30,10 @@ interface SettingsRepository {
     suspend fun setDisclaimerAccepted()
     suspend fun setOnboardingCompleted(value: Boolean)
     suspend fun setUserConfirmedOemAutostart(value: Boolean)
+
+    /** Internal one-time-migration flag: has the orphan-dose prune already run?
+     *  Not user-facing — gates [com.medalarm.app.domain.usecase.PruneOrphanDosesUseCase]
+     *  so it runs exactly once. */
+    suspend fun isOrphanDosePruneDone(): Boolean
+    suspend fun setOrphanDosePruneDone()
 }
