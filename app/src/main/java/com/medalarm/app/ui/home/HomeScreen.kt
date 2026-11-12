@@ -11,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,8 +85,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -202,22 +205,45 @@ fun HomeScreen(
             if (state.medications.isEmpty()) {
                 EmptyState(onAdd = { showAddTypeChooser = true })
             } else {
-                DayHeader(
-                    selectedDate = state.selectedDate,
-                    doses = state.doses,
-                    onPrev = { viewModel.shiftDay(-1) },
-                    onNext = { viewModel.shiftDay(1) },
-                    onJumpToday = { viewModel.jumpToToday() }
-                )
-                DoseList(
-                    medications = state.medications,
-                    doses = state.doses,
-                    swipeRightAction = state.swipeRightAction,
-                    swipeLeftAction = state.swipeLeftAction,
-                    onSwipeAction = onSwipeAction,
-                    onDoseClick = { actionDose = it },
-                    onOpenMedication = onOpenMedication
-                )
+                // Swiping left/right on free space (header, gaps, below the list) changes
+                // the day. Dose cards consume their own horizontal drags, so a swipe that
+                // starts on a card never reaches this detector.
+                val swipeThresholdPx = with(LocalDensity.current) { DAY_SWIPE_THRESHOLD.toPx() }
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(swipeThresholdPx) {
+                            var totalDx = 0f
+                            detectHorizontalDragGestures(
+                                onDragStart = { totalDx = 0f },
+                                onDragEnd = {
+                                    val delta = swipeDayDelta(totalDx, swipeThresholdPx)
+                                    if (delta != 0) viewModel.shiftDay(delta)
+                                },
+                                onHorizontalDrag = { change, dragAmount ->
+                                    change.consume()
+                                    totalDx += dragAmount
+                                }
+                            )
+                        }
+                ) {
+                    DayHeader(
+                        selectedDate = state.selectedDate,
+                        doses = state.doses,
+                        onPrev = { viewModel.shiftDay(-1) },
+                        onNext = { viewModel.shiftDay(1) },
+                        onJumpToday = { viewModel.jumpToToday() }
+                    )
+                    DoseList(
+                        medications = state.medications,
+                        doses = state.doses,
+                        swipeRightAction = state.swipeRightAction,
+                        swipeLeftAction = state.swipeLeftAction,
+                        onSwipeAction = onSwipeAction,
+                        onDoseClick = { actionDose = it },
+                        onOpenMedication = onOpenMedication
+                    )
+                }
             }
         }
     }
@@ -509,7 +535,11 @@ private fun SwipeableDoseCard(
     val leftEnabled = actionable && swipeLeftAction != SwipeAction.NONE
 
     if (!rightEnabled && !leftEnabled) {
-        DoseCard(dose, medication, isNextDue, onClick, onLongClick)
+        // Not swipeable, but still swallow horizontal drags so a swipe on a card
+        // never changes the day (day swipe is for free space only).
+        Box(Modifier.pointerInput(Unit) { detectHorizontalDragGestures { change, _ -> change.consume() } }) {
+            DoseCard(dose, medication, isNextDue, onClick, onLongClick)
+        }
         return
     }
 
@@ -876,6 +906,16 @@ private val DATE_FMT_LONG: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate
  *  Other non-today days already show the date as the title, so no repeat. */
 internal fun dayHeaderSubtitleDate(selected: LocalDate, today: LocalDate): LocalDate? =
     if (selected == today.minusDays(1) || selected == today.plusDays(1)) selected else null
+
+private val DAY_SWIPE_THRESHOLD = 64.dp
+
+/** Day step for a finished horizontal swipe: left (negative dx) = next day,
+ *  right = previous day, shorter than the threshold = no change. */
+internal fun swipeDayDelta(totalDx: Float, thresholdPx: Float): Int = when {
+    totalDx <= -thresholdPx -> 1
+    totalDx >= thresholdPx -> -1
+    else -> 0
+}
 
 private fun formatTime(dose: DoseLog): String =
     dose.scheduledAt.atZone(ZoneId.systemDefault()).toLocalTime().format(TIME_FMT)
