@@ -42,9 +42,11 @@ import androidx.compose.material.icons.outlined.RemoveCircle
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Snooze
+import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -383,13 +385,21 @@ private fun DayHeader(
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    if (!isToday) {
+                    dayHeaderSubtitleDate(selectedDate, today)?.let { date ->
                         Text(
-                            selectedDate.format(DATE_FMT_LONG),
+                            date.format(DATE_FMT_LONG),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                    if (!isToday) {
                         TextButton(onClick = onJumpToday) {
+                            Icon(
+                                Icons.Outlined.Today,
+                                contentDescription = null,
+                                modifier = Modifier.size(ButtonDefaults.IconSize)
+                            )
+                            Spacer(Modifier.width(ButtonDefaults.IconSpacing))
                             Text(stringResource(R.string.home_jump_today))
                         }
                     }
@@ -861,6 +871,11 @@ private val SwipeSkipGray = Color(0xFF67737E)
 
 private val TIME_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val DATE_FMT_LONG: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+
+/** Date line under the day title: only for Yesterday/Tomorrow, whose title is a word.
+ *  Other non-today days already show the date as the title, so no repeat. */
+internal fun dayHeaderSubtitleDate(selected: LocalDate, today: LocalDate): LocalDate? =
+    if (selected == today.minusDays(1) || selected == today.plusDays(1)) selected else null
 
 private fun formatTime(dose: DoseLog): String =
     dose.scheduledAt.atZone(ZoneId.systemDefault()).toLocalTime().format(TIME_FMT)
