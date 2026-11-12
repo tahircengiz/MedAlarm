@@ -8,6 +8,9 @@ o etikete karşılık gelen bölümü otomatik olarak GitHub Release açıklamas
 > Başlık, etiket adıyla birebir aynı olmalı (örn. etiket `v0.1.0-beta12` → başlık `## v0.1.0-beta12`).
 > Notları sade ve kullanıcı diliyle yazın; commit/PR referansı vermeyin.
 
+## v0.1.0-beta19
+- **Kaydırarak gün değiştir:** Ana ekranda boş bir yerde (gün başlığında, ilaç kartlarının arasında ya da altında) parmağını sola kaydırınca sonraki güne, sağa kaydırınca önceki güne geçiyorsun. İlaç kartının üstünde kaydırmak gün değiştirmez: bekleyen dozda eskisi gibi "aldım/atla" yapar, alınmış ya da atlanmış dozda hiçbir şey yapmaz. Oklar ve "Bugüne dön" düğmesi de duruyor.
+
 ## v0.1.0-beta18
 - **Başka bir güne bakarken artık "Bugün" yazmıyor:** Ana ekranda önceki ya da sonraki bir güne geçtiğinde tarihin altında "Bugün" görünüyordu ve o gün bugünmüş gibi okunuyordu. Bu aslında bugüne dönme düğmesiydi; artık takvim simgesiyle birlikte "Bugüne dön" yazıyor. Dün ve Yarın dışındaki günlerde tarih de iki kez yazılmıyor.
 
