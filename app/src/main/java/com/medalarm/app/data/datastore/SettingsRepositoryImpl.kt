@@ -78,6 +78,12 @@ internal class SettingsRepositoryImpl(
     override suspend fun setUserConfirmedOemAutostart(value: Boolean) =
         dataStore.edit { it[Keys.userConfirmedOemAutostart] = value }.unit()
 
+    override suspend fun isOrphanDosePruneDone(): Boolean =
+        dataStore.data.first()[Keys.orphanDosePruneDone] ?: false
+
+    override suspend fun setOrphanDosePruneDone() =
+        dataStore.edit { it[Keys.orphanDosePruneDone] = true }.unit()
+
     private fun Preferences.toUserSettings(): UserSettings {
         val defaults = UserSettings()
         return UserSettings(
@@ -123,5 +129,6 @@ internal class SettingsRepositoryImpl(
         val disclaimerAcceptedAt = longPreferencesKey("disclaimer_accepted_at")
         val onboardingCompleted = booleanPreferencesKey("onboarding_completed")
         val userConfirmedOemAutostart = booleanPreferencesKey("user_confirmed_oem_autostart")
+        val orphanDosePruneDone = booleanPreferencesKey("orphan_dose_prune_done_v1")
     }
 }

@@ -5,7 +5,9 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.medalarm.app.domain.repository.DoseLogRepository
+import com.medalarm.app.domain.repository.SettingsRepository
 import com.medalarm.app.domain.usecase.DedupeDoseLogsUseCase
+import com.medalarm.app.domain.usecase.PruneOrphanDosesUseCase
 import com.medalarm.app.domain.usecase.RescheduleAllActiveUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -33,6 +35,8 @@ class ReliabilityWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val rescheduleAllActiveUseCase: RescheduleAllActiveUseCase,
     private val dedupeDoseLogsUseCase: DedupeDoseLogsUseCase,
+    private val pruneOrphanDosesUseCase: PruneOrphanDosesUseCase,
+    private val settingsRepository: SettingsRepository,
     private val doseLogRepository: DoseLogRepository
 ) : CoroutineWorker(context, params) {
 
@@ -41,11 +45,18 @@ class ReliabilityWorker @AssistedInject constructor(
         // Heal any duplicate slots left by the old resurrection bug before we
         // re-arm alarms, so the reschedule works from a clean, deduped table.
         val removed = dedupeDoseLogsUseCase()
+        // One-time: drop orphan doses at times no active schedule fires (shifted-time
+        // twins). Gated so a later schedule edit doesn't retroactively delete history.
+        val prunedOrphans = if (!settingsRepository.isOrphanDosePruneDone()) {
+            pruneOrphanDosesUseCase().also { settingsRepository.setOrphanDosePruneDone() }
+        } else {
+            0
+        }
         rescheduleAllActiveUseCase(now = now)
         val flipped = doseLogRepository.markOverdueAsMissed(
             threshold = now.minus(OVERDUE_HOURS, ChronoUnit.HOURS)
         )
-        Timber.d("ReliabilityWorker: removed $removed duplicate doses, re-armed active meds, marked $flipped overdue as MISSED")
+        Timber.d("ReliabilityWorker: removed $removed duplicate doses, pruned $prunedOrphans orphan doses, re-armed active meds, marked $flipped overdue as MISSED")
         Result.success()
     } catch (t: Throwable) {
         Timber.e(t, "ReliabilityWorker failed")
