@@ -206,6 +206,8 @@
     <string name="settings_snooze_minutes">Erteleme süresi (dakika)</string>
     <string name="settings_snooze_count">Maks. erteleme sayısı</string>
     <string name="settings_snooze_unlimited">Sınırsız</string>
+    <!-- %1$d = dakika -->
+    <string name="settings_value_minutes">%1$d dk</string>
     <string name="settings_vibration">Alarmda titret</string>
     <string name="settings_tts">İlaç adını sesli oku</string>
     <string name="settings_low_stock_default">Varsayılan düşük stok eşiği</string>

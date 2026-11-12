@@ -70,7 +70,7 @@ private val DarkColors = darkColorScheme(
 @Composable
 fun MedAlarmTheme(
     darkTheme: Boolean? = null,
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     largeText: Boolean = false,
     content: @Composable () -> Unit
 ) {

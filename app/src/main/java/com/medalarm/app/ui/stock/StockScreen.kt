@@ -2,6 +2,7 @@
 
 package com.medalarm.app.ui.stock
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.Medication
+import com.medalarm.app.ui.common.localizedLabel
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 
@@ -161,8 +163,8 @@ private fun StockRow(
     Surface(
         onClick = onClick,
         shape = MaterialTheme.shapes.medium,
-        color = if (low) MaterialTheme.colorScheme.errorContainer
-                else MaterialTheme.colorScheme.surfaceVariant,
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        border = if (low) BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.45f)) else null,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -198,9 +200,8 @@ private fun StockRow(
                 Text(
                     medication.name,
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (low) MaterialTheme.colorScheme.onErrorContainer
-                            else MaterialTheme.colorScheme.onSurface
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.height(2.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -216,7 +217,7 @@ private fun StockRow(
                     Text(
                         text = stockLabel(medication),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (low) MaterialTheme.colorScheme.onErrorContainer
+                        color = if (low) MaterialTheme.colorScheme.error
                                 else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -238,12 +239,12 @@ private fun StockRow(
 private fun stockLabel(med: Medication): String {
     val amount = med.stockAmount
         ?: return stringResource(R.string.stock_screen_not_tracked)
-    val unitName = med.unit.name.lowercase()
+    val unitName = med.unit.localizedLabel()
     val remaining = stringResource(
         R.string.stock_screen_remaining, "${amount.toCleanString()} $unitName"
     )
     val threshold = med.stockThreshold ?: return remaining
-    return "$remaining (≤ ${threshold.toCleanString()} ⚠️)"
+    return "$remaining (≤ ${threshold.toCleanString()})"
 }
 
 @Composable

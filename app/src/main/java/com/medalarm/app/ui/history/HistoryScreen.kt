@@ -2,6 +2,7 @@
 
 package com.medalarm.app.ui.history
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -90,7 +91,7 @@ fun HistoryScreen(
                             Text(
                                 bucket.date.format(DATE_FMT),
                                 style = MaterialTheme.typography.titleSmall,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         items(bucket.doses, key = { it.id }) { dose ->
@@ -130,7 +131,10 @@ private fun AdherenceSummary(taken: Int, total: Int) {
     val pct = if (total > 0) (taken * 100 / total) else 0
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.20f))
     ) {
         Row(
             modifier = Modifier
@@ -142,13 +146,14 @@ private fun AdherenceSummary(taken: Int, total: Int) {
                 Text(
                     stringResource(R.string.history_adherence, taken, total),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
+            // The one accent on this screen: the adherence figure itself.
             Text(
                 "$pct%",
                 style = MaterialTheme.typography.headlineSmall,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

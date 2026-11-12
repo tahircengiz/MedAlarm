@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
                     ThemeMode.DARK -> true
                 }
             }
-            val dynamicColor = settings?.useDynamicColor ?: true
+            val dynamicColor = settings?.useDynamicColor ?: false
 
             val largeText = settings?.largeTextMode ?: false
 

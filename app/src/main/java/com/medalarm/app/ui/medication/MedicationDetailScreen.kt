@@ -2,8 +2,10 @@
 
 package com.medalarm.app.ui.medication
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -53,9 +56,12 @@ import com.medalarm.app.domain.model.MealRelation
 import com.medalarm.app.domain.model.Medication
 import com.medalarm.app.domain.model.Schedule
 import com.medalarm.app.ui.common.MedicationPhotoBox
+import com.medalarm.app.ui.common.dosageText
+import com.medalarm.app.ui.common.localizedLabel
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
 fun MedicationDetailScreen(
@@ -165,8 +171,8 @@ fun MedicationDetailScreen(
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        "$amount ${med.unit.name.lowercase()}" +
-                            if (threshold != null) " (≤ $threshold ⚠️)" else "",
+                        "$amount ${med.unit.localizedLabel()}" +
+                            if (threshold != null) " (≤ $threshold)" else "",
                         style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier.weight(1f)
                     )
@@ -348,9 +354,14 @@ fun MedicationDetailScreen(
 @Composable
 private fun HeaderCard(med: Medication) {
     val accent = resolveMedicationColor(med.colorHex)
+    // Quiet neutral card + hairline. The medication's own color lives only in the
+    // small avatar, not as a full-bleed wash — the box photo carries the richness.
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = accent)
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.20f))
     ) {
         Row(
             modifier = Modifier.padding(20.dp),
@@ -366,21 +377,33 @@ private fun HeaderCard(med: Medication) {
                         .size(72.dp)
                         .clip(MaterialTheme.shapes.medium)
                 )
-                Spacer(Modifier.width(16.dp))
+            } else {
+                Surface(
+                    color = accent,
+                    shape = MaterialTheme.shapes.medium,
+                    modifier = Modifier.size(72.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(72.dp)) {
+                        Text(
+                            med.name.firstOrNull()?.uppercase().orEmpty(),
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = androidx.compose.ui.graphics.Color.White
+                        )
+                    }
+                }
             }
+            Spacer(Modifier.width(16.dp))
             Column {
                 Text(
                     med.name,
                     style = MaterialTheme.typography.headlineSmall,
-                    color = androidx.compose.ui.graphics.Color.White
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.height(4.dp))
-                val amount = if (med.dosageAmount % 1f == 0f) med.dosageAmount.toInt().toString()
-                else med.dosageAmount.toString()
                 Text(
-                    "$amount ${med.unit.name.lowercase()}",
+                    med.dosageText(),
                     style = MaterialTheme.typography.titleMedium,
-                    color = androidx.compose.ui.graphics.Color.White.copy(alpha = 0.9f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
@@ -420,7 +443,7 @@ private fun ScheduleCard(schedule: Schedule) {
             if (schedule.mealRelation != MealRelation.NONE) {
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    schedule.mealRelation.name.lowercase().replaceFirstChar { it.uppercase() },
+                    schedule.mealRelation.localizedLabel(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -434,9 +457,9 @@ private fun SectionLabel(title: String) {
     Text(
         title,
         style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary
+        color = MaterialTheme.colorScheme.onSurfaceVariant
     )
 }
 
 private val TIME_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-private val DATE_FMT: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+private val DATE_FMT: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)

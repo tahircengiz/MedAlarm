@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.medalarm.app.R
 import com.medalarm.app.domain.model.Medication
+import com.medalarm.app.ui.common.dosageText
 import com.medalarm.app.ui.common.rememberMedicationPhoto
 import com.medalarm.app.ui.common.resolveMedicationColor
 
@@ -181,10 +182,8 @@ private fun MedicationRow(medication: Medication, onClick: () -> Unit, muted: Bo
                             else MaterialTheme.colorScheme.onSurface
                 )
                 Spacer(Modifier.height(4.dp))
-                val amount = if (medication.dosageAmount % 1f == 0f) medication.dosageAmount.toInt().toString()
-                else medication.dosageAmount.toString()
                 Text(
-                    "$amount ${medication.unit.name.lowercase()}",
+                    medication.dosageText(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

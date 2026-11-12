@@ -5,7 +5,9 @@ import java.time.Instant
 data class UserSettings(
     val language: AppLanguage = AppLanguage.SYSTEM,
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
-    val useDynamicColor: Boolean = true,
+    // Default off: the app ships with its own calm teal identity. Users who prefer
+    // Material You can still turn wallpaper colors on in Settings → Appearance.
+    val useDynamicColor: Boolean = false,
     val ttsEnabled: Boolean = false,
 
     // Snooze
